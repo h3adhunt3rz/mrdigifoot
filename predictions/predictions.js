@@ -315,32 +315,86 @@ async function init() {
     const myChoices = {};
     votes.forEach(v => { if (v.visitor_id === myVid) myChoices[v.fixture_id] = v.choice; });
 
+    // Groupement par journée (matchday) — en-têtes + barre de sélection
+    const byDay = new Map();
     fixtures.forEach(f => {
-        const card = buildCard(f);
-        grid.appendChild(card);
+        const day = f.matchday || 0;
+        if (!byDay.has(day)) byDay.set(day, []);
+        byDay.get(day).push(f);
+    });
+    const sortedDays = [...byDay.keys()].sort((a, b) => a - b);
 
-        const votesForFixture = votes.filter(v => v.fixture_id === f.id);
-        renderVoteStats(card, votesForFixture, myChoices[f.id] || "");
+    // Barre de navigation des journées
+    const bar = document.createElement("div");
+    bar.className = "day-bar";
+    grid.appendChild(bar);
 
-        card.querySelectorAll(".vote-btn").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const choice = btn.dataset.choice;
-                btn.disabled = true;
-                try {
-                    await saveVote(f, choice);
-                    toast("Vote enregistré ✓");
-                    const refresh = await fetchVotes();
-                    const fresh = refresh.filter(v => v.fixture_id === f.id);
-                    renderVoteStats(card, fresh, choice);
-                } catch (err) {
-                    console.error(err);
-                    btn.disabled = false;
-                    toast("Erreur lors du vote, réessaie.");
-                }
+    const content = document.createElement("div");
+    content.className = "card-grid";
+    grid.appendChild(content);
+
+    const paintDay = (day) => {
+        content.innerHTML = "";
+        const dayFixtures = byDay.get(day);
+
+        const section = document.createElement("div");
+        section.className = "day-section";
+        content.appendChild(section);
+
+        const header = document.createElement("div");
+        header.className = "day-header";
+        header.innerHTML = `<span class="day-header-tag">Journée ${day}</span><span class="day-header-count">${dayFixtures.length} match${dayFixtures.length > 1 ? "s" : ""}</span>`;
+        section.appendChild(header);
+
+        const inner = document.createElement("div");
+        inner.className = "card-grid day-grid";
+        section.appendChild(inner);
+
+        dayFixtures.forEach(f => {
+            const card = buildCard(f);
+            inner.appendChild(card);
+
+            const votesForFixture = votes.filter(v => v.fixture_id === f.id);
+            renderVoteStats(card, votesForFixture, myChoices[f.id] || "");
+
+            card.querySelectorAll(".vote-btn").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    const choice = btn.dataset.choice;
+                    btn.disabled = true;
+                    try {
+                        await saveVote(f, choice);
+                        toast("Vote enregistré ✓");
+                        const refresh = await fetchVotes();
+                        const fresh = refresh.filter(v => v.fixture_id === f.id);
+                        renderVoteStats(card, fresh, choice);
+                    } catch (err) {
+                        console.error(err);
+                        btn.disabled = false;
+                        toast("Erreur lors du vote, réessaie.");
+                    }
+                });
             });
         });
+    };
+
+    const activeDay = new URLSearchParams(location.search).get("journee") ?
+        Number(new URLSearchParams(location.search).get("journee")) : null;
+    const selectedDay = activeDay && sortedDays.includes(activeDay) ? activeDay : sortedDays[0];
+
+    sortedDays.forEach(day => {
+        const chip = document.createElement("button");
+        chip.className = "day-chip" + (selectedDay === day ? " active" : "");
+        chip.textContent = "J" + day;
+        chip.title = "Journée " + day;
+        chip.addEventListener("click", () => {
+            bar.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
+            chip.classList.add("active");
+            paintDay(day);
+        });
+        bar.appendChild(chip);
     });
 
+    paintDay(selectedDay);
     enhanceCards3D(grid);
 }
 
