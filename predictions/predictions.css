@@ -199,6 +199,69 @@ body {
     font-size: 1.1rem;
 }
 
+/* Badge résultat / en direct */
+.card-result-badge {
+    position: absolute;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(46, 204, 113, 0.18);
+    border: 1px solid rgba(46, 204, 113, 0.6);
+    color: #7dffb8;
+    white-space: nowrap;
+}
+.card-result-badge--live {
+    background: rgba(225, 29, 46, 0.2);
+    border-color: rgba(225, 29, 46, 0.65);
+    color: #ff8b96;
+}
+
+/* Équipes : gagnante (légende) / perdante (atténué) */
+.result-win .club-logo-box { box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(46, 204, 113, 0.7), 0 6px 16px rgba(0, 0, 0, 0.45); }
+.result-loss { opacity: 0.5; }
+
+/* Verdict de la comparaison */
+.fx-prediction-verdict {
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 4px;
+}
+.verdict-chip {
+    font-family: var(--font-display);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-align: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    line-height: 1.35;
+}
+.verdict-chip--pending {
+    background: rgba(59, 158, 255, 0.14);
+    border: 1px solid rgba(59, 158, 255, 0.4);
+    color: #8ecae6;
+}
+.verdict-chip--good {
+    background: rgba(46, 204, 113, 0.14);
+    border: 1px solid rgba(46, 204, 113, 0.45);
+    color: #7dffb8;
+}
+.verdict-chip--bad {
+    background: rgba(225, 29, 46, 0.16);
+    border: 1px solid rgba(225, 29, 46, 0.45);
+    color: #ff8b96;
+}
+
 /* --- SECTIONS PAR JOURNÉE --- */
 .day-bar {
     grid-column: 1 / -1;

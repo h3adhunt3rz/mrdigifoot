@@ -165,40 +165,90 @@ async function saveVote(f, choice) {
 function buildCard(f) {
     const card = document.createElement("div");
     card.className = "ratio-4-5-card";
+
+    const played = f.status === "Terminé" &&
+        f.home_score !== null && f.home_score !== undefined &&
+        f.away_score !== null && f.away_score !== undefined;
+
+    const scoreHTML = played
+        ? `<span class="fx-score-n">${f.home_score}</span><span class="fx-score-sep">:</span><span class="fx-score-n">${f.away_score}</span>`
+        : `<span class="fx-score-n vs-unplayed" style="color:#fff;">VS</span>`;
+
+    const statusHTML = played
+        ? `<span class="card-result-badge">Résultat final</span>`
+        : (f.status === "En cours" ? `<span class="card-result-badge card-result-badge--live">● En cours</span>` : "");
+
+    const voteZoneHTML = played
+        ? `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}" data-played="1"></div>`
+        : `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}">
+            <button class="vote-btn" data-choice="home" title="Victoire ${escapeAttr(f.home_name)}">${escapeHTML(shortName(f.home_name))}</button>
+            <button class="vote-btn" data-choice="draw" title="Match nul">Nul</button>
+            <button class="vote-btn" data-choice="away" title="Victoire ${escapeAttr(f.away_name)}">${escapeHTML(shortName(f.away_name))}</button>
+          </div>`;
+
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
         ${f.date ? `<span class="card-date-top">${formatDateDMY(f.date)}</span>` : ""}
         <span class="card-round-top">${roundLabel(f)}</span>
         <span class="card-badge-top">🦁 EPL ${f.season ? f.season.slice(0, 4) + "/" + f.season.slice(5) : ""}</span>
+        ${statusHTML}
         <div class="fx-arena">
-          <div class="fx-team home">
+          <div class="fx-team home ${played ? "result-win" : ""} ${played && f.home_score < f.away_score ? "result-loss" : ""}">
             ${logoHTML(f.home_team_id, 80)}
             <span class="fx-team-name">${escapeHTML(f.home_name)}</span>
           </div>
           <div class="fx-scoreboard">
             <div class="fx-score-nums">
-              <span class="fx-score-n vs-unplayed" style="color:#fff;">VS</span>
+              ${scoreHTML}
             </div>
           </div>
-          <div class="fx-team away">
+          <div class="fx-team away ${played ? "result-win" : ""} ${played && f.away_score < f.home_score ? "result-loss" : ""}">
             ${logoHTML(f.away_team_id, 80)}
             <span class="fx-team-name">${escapeHTML(f.away_name)}</span>
           </div>
         </div>
         <hr class="card-sep" />
+        <div class="fx-prediction-verdict" data-verdict></div>
         <div class="fx-card-bottom">
           <span class="canvas-watermark">@mrdigifoot</span>
         </div>
       </div>
-      <div class="vote-zone" data-fixture="${escapeAttr(f.id)}">
-        <button class="vote-btn" data-choice="home" title="Victoire ${escapeAttr(f.home_name)}">${escapeHTML(shortName(f.home_name))}</button>
-        <button class="vote-btn" data-choice="draw" title="Match nul">Nul</button>
-        <button class="vote-btn" data-choice="away" title="Victoire ${escapeAttr(f.away_name)}">${escapeHTML(shortName(f.away_name))}</button>
-      </div>
+      ${voteZoneHTML}
       <div class="vote-stats" data-stats></div>
       <div class="vote-count" data-count></div>
     `;
     return card;
+}
+
+/* Verdict : comparaison du choix majoritaire avec le résultat réel */
+function computeVerdict(card, f, votesForFixture) {
+    const verdict = card.querySelector("[data-verdict]");
+    if (!verdict) return;
+
+    const total = votesForFixture.length;
+    if (total === 0) { verdict.innerHTML = ""; return; }
+
+    const c = ch => votesForFixture.filter(v => v.choice === ch).length;
+    const counts = { home: c("home"), draw: c("draw"), away: c("away") };
+    const majority = counts.home >= counts.draw && counts.home >= counts.away ? "home"
+                   : counts.away >= counts.draw && counts.away >= counts.home ? "away" : "draw";
+
+    const majorityLabel = majority === "home" ? f.home_name : majority === "away" ? f.away_name : "Nul";
+    const majorityPct = Math.round((counts[majority] / total) * 100);
+
+    const played = f.status === "Terminé" && f.home_score != null && f.away_score != null;
+    if (!played) {
+        verdict.innerHTML = `<span class="verdict-chip verdict-chip--pending">Le public mise sur ${escapeHTML(shortName(majorityLabel))} (${majorityPct}%)</span>`;
+        return;
+    }
+
+    const actual = f.home_score > f.away_score ? "home" : f.home_score < f.away_score ? "away" : "draw";
+    const correct = majority === actual;
+    const actualLabel = actual === "home" ? f.home_name : actual === "away" ? f.away_name : "Nul";
+
+    verdict.innerHTML = correct
+        ? `<span class="verdict-chip verdict-chip--good">✅ Majorité correcte : ${escapeHTML(shortName(majorityLabel))} (${majorityPct}%) → résultat ${escapeHTML(shortName(actualLabel))}</span>`
+        : `<span class="verdict-chip verdict-chip--bad">❌ Majorité fausse : ${escapeHTML(shortName(majorityLabel))} (${majorityPct}%) → réel ${escapeHTML(shortName(actualLabel))}</span>`;
 }
 
 function shortName(name) {
@@ -356,6 +406,7 @@ async function init() {
 
             const votesForFixture = votes.filter(v => v.fixture_id === f.id);
             renderVoteStats(card, votesForFixture, myChoices[f.id] || "");
+            computeVerdict(card, f, votesForFixture);
 
             card.querySelectorAll(".vote-btn").forEach(btn => {
                 btn.addEventListener("click", async () => {
@@ -367,6 +418,7 @@ async function init() {
                         const refresh = await fetchVotes();
                         const fresh = refresh.filter(v => v.fixture_id === f.id);
                         renderVoteStats(card, fresh, choice);
+                        computeVerdict(card, f, fresh);
                     } catch (err) {
                         console.error(err);
                         btn.disabled = false;
