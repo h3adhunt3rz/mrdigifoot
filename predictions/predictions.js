@@ -126,15 +126,15 @@ function toast(msg) {
 
 /* --- Supabase : lecture des votes existants --- */
 async function fetchVotes() {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?select=fixture_id,choice,visitor_id`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?select=fixture_id,home_pred_score,away_pred_score,visitor_id`, {
         headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY }
     });
     if (!res.ok) throw new Error("fetch votes failed: " + res.status);
     return res.json();
 }
 
-/* --- Supabase : enregistrement / mise à jour d'un vote --- */
-async function saveVote(f, choice) {
+/* --- Supabase : enregistrement / mise à jour d'un vote (score prédit) --- */
+async function saveVote(f, homePred, awayPred) {
     const vid = getVisitorId();
     const body = {
         fixture_id: f.id,
@@ -145,7 +145,8 @@ async function saveVote(f, choice) {
         matchday: f.matchday,
         season: f.season,
         fixture_date: f.date,
-        choice: choice,
+        home_pred_score: homePred,
+        away_pred_score: awayPred,
         visitor_id: vid
     };
     const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?on_conflict=fixture_id,visitor_id`, {
@@ -181,9 +182,13 @@ function buildCard(f) {
     const voteZoneHTML = played
         ? `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}" data-played="1"></div>`
         : `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}">
-            <button class="vote-btn" data-choice="home" title="Victoire ${escapeAttr(f.home_name)}">${escapeHTML(shortName(f.home_name))}</button>
-            <button class="vote-btn" data-choice="draw" title="Match nul">Nul</button>
-            <button class="vote-btn" data-choice="away" title="Victoire ${escapeAttr(f.away_name)}">${escapeHTML(shortName(f.away_name))}</button>
+            <div class="pred-input-title">Mon pronostic</div>
+            <div class="pred-inputs">
+              <input type="number" min="0" max="99" class="pred-input" data-pred-home placeholder="${escapeAttr(shortName(f.home_name))}">
+              <span class="pred-input-sep">-</span>
+              <input type="number" min="0" max="99" class="pred-input" data-pred-away placeholder="${escapeAttr(shortName(f.away_name))}">
+            </div>
+            <button class="pred-save-btn" data-save-pred="${escapeAttr(f.id)}">Valider</button>
           </div>`;
 
     card.innerHTML = `
@@ -220,7 +225,22 @@ function buildCard(f) {
     return card;
 }
 
-/* Verdict : comparaison du choix majoritaire avec le résultat réel */
+/* Verdict : comparaison du score prédit (médian des votes) avec le résultat réel */
+function isPlayed(f) {
+    return f.status === "Terminé" && f.home_score != null && f.away_score != null;
+}
+
+function emojiFor(f, pH, pA) {
+    const played = isPlayed(f);
+    const exact = pA === undefined || (pH === f.home_score && pA === f.away_score);
+    const winnerPred = pH > (pA || 0) ? "home" : pH < (pA || 0) ? "away" : "draw";
+    const actual = f.home_score > f.away_score ? "home" : f.home_score < f.away_score ? "away" : "draw";
+    if (!played) return { emoji: "⏳", cls: "pred-emoji--pending", label: "En attente du résultat" };
+    if (exact) return { emoji: "🎯", cls: "pred-emoji--exact", label: "Score exact" };
+    if (winnerPred === actual) return { emoji: "👍", cls: "pred-emoji--winner", label: "Bon vainqueur" };
+    return { emoji: "❌", cls: "pred-emoji--wrong", label: "Prédiction fausse" };
+}
+
 function computeVerdict(card, f, votesForFixture) {
     const verdict = card.querySelector("[data-verdict]");
     if (!verdict) return;
@@ -228,27 +248,33 @@ function computeVerdict(card, f, votesForFixture) {
     const total = votesForFixture.length;
     if (total === 0) { verdict.innerHTML = ""; return; }
 
-    const c = ch => votesForFixture.filter(v => v.choice === ch).length;
-    const counts = { home: c("home"), draw: c("draw"), away: c("away") };
-    const majority = counts.home >= counts.draw && counts.home >= counts.away ? "home"
-                   : counts.away >= counts.draw && counts.away >= counts.home ? "away" : "draw";
-
-    const majorityLabel = majority === "home" ? f.home_name : majority === "away" ? f.away_name : "Nul";
-    const majorityPct = Math.round((counts[majority] / total) * 100);
+    // Score "communauté" = arrondi moyen des scores prédits
+    const avgH = Math.round(votesForFixture.reduce((s, v) => s + (v.home_pred_score || 0), 0) / total);
+    const avgA = Math.round(votesForFixture.reduce((s, v) => s + (v.away_pred_score || 0), 0) / total);
 
     const played = f.status === "Terminé" && f.home_score != null && f.away_score != null;
     if (!played) {
-        verdict.innerHTML = `<span class="verdict-chip verdict-chip--pending">Le public mise sur ${escapeHTML(shortName(majorityLabel))} (${majorityPct}%)</span>`;
+        verdict.innerHTML = `<span class="verdict-chip verdict-chip--pending">Public : ${escapeHTML(shortName(f.home_name))} ${avgH} - ${avgA} ${escapeHTML(shortName(f.away_name))}</span>`;
         return;
     }
 
+    const scoreExact = avgH === f.home_score && avgA === f.away_score;
+    const winnerPred = avgH > avgA ? "home" : avgH < avgA ? "away" : "draw";
     const actual = f.home_score > f.away_score ? "home" : f.home_score < f.away_score ? "away" : "draw";
-    const correct = majority === actual;
-    const actualLabel = actual === "home" ? f.home_name : actual === "away" ? f.away_name : "Nul";
+    const winnerOK = winnerPred === actual;
 
-    verdict.innerHTML = correct
-        ? `<span class="verdict-chip verdict-chip--good">✅ Majorité correcte : ${escapeHTML(shortName(majorityLabel))} (${majorityPct}%) → résultat ${escapeHTML(shortName(actualLabel))}</span>`
-        : `<span class="verdict-chip verdict-chip--bad">❌ Majorité fausse : ${escapeHTML(shortName(majorityLabel))} (${majorityPct}%) → réel ${escapeHTML(shortName(actualLabel))}</span>`;
+    let emoji, cls, text;
+    if (scoreExact) {
+        emoji = "🎯"; cls = "verdict-chip--good";
+        text = `Score exact : ${avgH} - ${avgA}`;
+    } else if (winnerOK) {
+        emoji = "👍"; cls = "verdict-chip--winner";
+        text = `Bon vainqueur : ${avgH} - ${avgA}`;
+    } else {
+        emoji = "❌"; cls = "verdict-chip--bad";
+        text = `Faux : ${avgH} - ${avgA} (réel ${f.home_score} - ${f.away_score})`;
+    }
+    verdict.innerHTML = `<span class="verdict-chip ${cls}">${emoji} ${escapeHTML(text)}</span>`;
 }
 
 function shortName(name) {
@@ -265,7 +291,7 @@ function escapeHTML(s) {
 function escapeAttr(s) { return escapeHTML(s); }
 
 /* --- Stats des votes en barres --- */
-function renderVoteStats(fixtureCard, votesForFixture, myChoice) {
+function renderVoteStats(fixtureCard, votesForFixture, myPred) {
     const statsEl = fixtureCard.querySelector("[data-stats]");
     const countEl = fixtureCard.querySelector("[data-count]");
     const total = votesForFixture.length;
@@ -274,13 +300,31 @@ function renderVoteStats(fixtureCard, votesForFixture, myChoice) {
         countEl.textContent = "";
         return;
     }
-    const count = c => votesForFixture.filter(v => v.choice === c).length;
+
+    // Répartition des pronostics par vainqueur prédit (dom / nul / ext)
+    const count = c => votesForFixture.filter(v =>
+        (v.home_pred_score == null || v.away_pred_score == null) ? false :
+        (v.home_pred_score > v.away_pred_score ? "home" : v.home_pred_score < v.away_pred_score ? "away" : "draw") === c
+    ).length;
     const pHome = Math.round((count("home") / total) * 100);
     const pDraw = Math.round((count("draw") / total) * 100);
     const pAway = 100 - pHome - pDraw;
 
+    // Score le plus voté (mode) pour affichage
+    const modes = {};
+    votesForFixture.filter(v => v.home_pred_score != null).forEach(v => {
+        const k = `${v.home_pred_score}-${v.away_pred_score}`;
+        modes[k] = (modes[k] || 0) + 1;
+    });
+    let topScore = "";
+    let topN = 0;
+    Object.keys(modes).forEach(k => {
+        if (modes[k] > topN) { topN = modes[k]; topScore = k; }
+    });
+    topScore = topScore ? "· Score le plus voté : " + topScore : "";
+
     statsEl.innerHTML = `
-        <div class="vote-stat-row"><span>${escapeHTML(shortName(votesForFixture.length ? votesForFixture[0].home_name : ""))}</span>
+        <div class="vote-stat-row"><span>${escapeHTML(shortName(votesForFixture[0].home_name || ""))}</span>
             <div class="vote-stat-bar"><div class="vote-stat-fill vote-stat-fill--home" style="width:${pHome}%"></div></div>
             <span class="vote-stat-pct">${pHome}%</span></div>
         <div class="vote-stat-row"><span>Nul</span>
@@ -291,12 +335,13 @@ function renderVoteStats(fixtureCard, votesForFixture, myChoice) {
             <span class="vote-stat-pct">${pAway}%</span></div>
     `;
     statsEl.classList.add("visible");
-    countEl.textContent = total + (total > 1 ? " votes" : " vote");
+    countEl.textContent = total + (total > 1 ? " votes" : " vote") + " " + topScore;
 
-    const prevBtn = fixtureCard.querySelector(".vote-btn.selected");
-    if (prevBtn) prevBtn.classList.remove("selected");
-    const btn = fixtureCard.querySelector(`.vote-btn[data-choice="${myChoice}"]`);
-    if (btn) btn.classList.add("selected");
+    if (myPred && myPred.home_pred_score != null) {
+        const h = myPred.home_pred_score, a = myPred.away_pred_score;
+        const line = fixtureCard.querySelector(".pred-saved-line");
+        if (line) line.innerHTML = `Mon pronostic : <b>${h} - ${a}</b> <button class="pred-edit-mini" data-edit-pred>Modifier</button>`;
+    }
 }
 
 /* --- Effet 3D tilt --- */
@@ -362,8 +407,11 @@ async function init() {
     let votes = [];
     try { votes = await fetchVotes(); } catch (e) { console.error(e); }
     const myVid = getVisitorId();
-    const myChoices = {};
-    votes.forEach(v => { if (v.visitor_id === myVid) myChoices[v.fixture_id] = v.choice; });
+    const myPreds = {};
+    votes.forEach(v => {
+        if (v.visitor_id === myVid && v.home_pred_score != null)
+            myPreds[v.fixture_id] = { home_pred_score: v.home_pred_score, away_pred_score: v.away_pred_score };
+    });
 
     // Groupement par journée (matchday) — en-têtes + barre de sélection
     const byDay = new Map();
@@ -405,27 +453,60 @@ async function init() {
             inner.appendChild(card);
 
             const votesForFixture = votes.filter(v => v.fixture_id === f.id);
-            renderVoteStats(card, votesForFixture, myChoices[f.id] || "");
+            renderVoteStats(card, votesForFixture, myPreds[f.id] || null);
             computeVerdict(card, f, votesForFixture);
 
-            card.querySelectorAll(".vote-btn").forEach(btn => {
-                btn.addEventListener("click", async () => {
-                    const choice = btn.dataset.choice;
-                    btn.disabled = true;
+            // Si j'ai déjà pronostiqué ce match → afficher mon score + emoji
+            const myPred = myPreds[f.id];
+            if (myPred) {
+                const zone = card.querySelector(".vote-zone");
+                const emoji = emojiFor(f, myPred.home_pred_score, myPred.away_pred_score);
+                if (zone) {
+                    zone.innerHTML = `
+                        <div class="pred-line">
+                            <span class="pred-emoji ${emoji.cls}">${emoji.emoji}</span>
+                            <span class="pred-score">${myPred.home_pred_score} - ${myPred.away_pred_score}</span>
+                        </div>
+                        <div class="pred-status">${emoji.label}</div>
+                        ${isPlayed(f) ? `<div class="pred-real">Réel : ${f.home_score} - ${f.away_score}</div>` : ""}
+                    `;
+                } else {
+                    // match joué, pas de .vote-zone → ajouter une ligne sous la carte
+                    const addon = document.createElement("div");
+                    addon.className = "vote-zone";
+                    addon.innerHTML = `
+                        <div class="pred-line">
+                            <span class="pred-emoji ${emoji.cls}">${emoji.emoji}</span>
+                            <span class="pred-score">${myPred.home_pred_score} - ${myPred.away_pred_score}</span>
+                        </div>
+                        <div class="pred-status">${emoji.label}</div>
+                        <div class="pred-real">Réel : ${f.home_score} - ${f.away_score}</div>
+                    `;
+                    card.appendChild(addon);
+                }
+                card.querySelector("[data-save-pred]")?.remove();
+            }
+
+            const saveBtn = card.querySelector("[data-save-pred]");
+            if (saveBtn) {
+                saveBtn.addEventListener("click", async () => {
+                    const hs = Number(card.querySelector("[data-pred-home]").value);
+                    const as_ = Number(card.querySelector("[data-pred-away]").value);
+                    if (isNaN(hs) || isNaN(as_) || hs < 0 || as_ < 0) { toast("Entre un score valide (ex: 2 - 1)"); return; }
+                    saveBtn.disabled = true;
                     try {
-                        await saveVote(f, choice);
-                        toast("Vote enregistré ✓");
-                        const refresh = await fetchVotes();
-                        const fresh = refresh.filter(v => v.fixture_id === f.id);
-                        renderVoteStats(card, fresh, choice);
-                        computeVerdict(card, f, fresh);
+                        await saveVote(f, hs, as_);
+                        toast("Pronostic enregistré ✓");
+                        myPreds[f.id] = { home_pred_score: hs, away_pred_score: as_ };
+                        votes = await fetchVotes();
+                        paintDay(day);
                     } catch (err) {
                         console.error(err);
-                        btn.disabled = false;
-                        toast("Erreur lors du vote, réessaie.");
+                        saveBtn.disabled = false;
+                        toast("Erreur lors de l'envoi, réessaie.");
                     }
                 });
-            });
+            }
         });
     };
 
