@@ -126,6 +126,51 @@ body:has(a:hover) #cursor::after {
 
 @media (pointer: coarse) { #cursor { display: none; } }
 
+/* --- MENU SUPPLÉMENTAIRE (page vitrine → outils Mr DigiFoot) --- */
+.site-nav {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    background: rgba(13, 6, 7, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(192, 157, 60, 0.25);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 50;
+}
+.site-nav-link {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 999px;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+}
+.site-nav-link:hover { color: #fff; }
+.site-nav-link.is-current { color: #fff; }
+.site-nav-link--cta {
+    color: #fff;
+    background: linear-gradient(135deg, #581c24, #3a151b);
+    border: 1px solid rgba(192, 157, 60, 0.45);
+}
+.site-nav-link--cta:hover { box-shadow: 0 0 16px rgba(192, 157, 60, 0.35); }
+
+@media (max-width: 560px) {
+    .site-nav { top: 12px; width: calc(100% - 24px); justify-content: center; }
+    .site-nav-link { padding: 8px 12px; font-size: 0.75rem; }
+}
+
 /* --- HERO SECTION --- */
 .hero {
     width: 100%;
