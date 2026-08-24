@@ -126,15 +126,15 @@ function toast(msg) {
 
 /* --- Supabase : lecture des votes existants --- */
 async function fetchVotes() {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?select=fixture_id,home_pred_score,away_pred_score,visitor_id`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?select=fixture_id,choice,visitor_id`, {
         headers: { apikey: SUPABASE_ANON_KEY, Authorization: "Bearer " + SUPABASE_ANON_KEY }
     });
     if (!res.ok) throw new Error("fetch votes failed: " + res.status);
     return res.json();
 }
 
-/* --- Supabase : enregistrement / mise à jour d'un vote (score prédit) --- */
-async function saveVote(f, homePred, awayPred) {
+/* --- Supabase : enregistrement / mise à jour d'un vote (choix 1 / N / 2) --- */
+async function saveVote(f, choice) {
     const vid = getVisitorId();
     const body = {
         fixture_id: f.id,
@@ -145,8 +145,7 @@ async function saveVote(f, homePred, awayPred) {
         matchday: f.matchday,
         season: f.season,
         fixture_date: f.date,
-        home_pred_score: homePred,
-        away_pred_score: awayPred,
+        choice: choice,
         visitor_id: vid
     };
     const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?on_conflict=fixture_id,visitor_id`, {
@@ -179,16 +178,27 @@ function buildCard(f) {
         ? `<span class="card-result-badge">Résultat final</span>`
         : (f.status === "En cours" ? `<span class="card-result-badge card-result-badge--live">● En cours</span>` : "");
 
+    const choiceBtnHTML = (val, label, sub, dim) => `
+        <button class="pred-choice-btn ${dim ? "is-dim" : ""}" ${dim ? "disabled" : ""} ${dim ? "" : `data-save-pred="${escapeAttr(f.id)}" data-choice="${val}"`}>
+            <span class="pred-choice-val">${label}</span>
+            <span class="pred-choice-sub">${escapeHTML(sub)}</span>
+        </button>`;
+
     const voteZoneHTML = played
-        ? `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}" data-played="1"></div>`
-        : `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}">
-            <div class="pred-input-title">Mon pronostic</div>
-            <div class="pred-inputs">
-              <input type="number" min="0" max="99" class="pred-input" data-pred-home placeholder="${escapeAttr(shortName(f.home_name))}">
-              <span class="pred-input-sep">-</span>
-              <input type="number" min="0" max="99" class="pred-input" data-pred-away placeholder="${escapeAttr(shortName(f.away_name))}">
+        ? `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}" data-played="1">
+            <div class="pred-choices pred-choices--filled">
+                ${choiceBtnHTML("1", "1", shortName(f.home_name), true)}
+                ${choiceBtnHTML("N", "N", "Nul", true)}
+                ${choiceBtnHTML("2", "2", shortName(f.away_name), true)}
             </div>
-            <button class="pred-save-btn" data-save-pred="${escapeAttr(f.id)}">Valider</button>
+            <div class="pred-status-text pred-status-text--muted">Pronostics clos</div>
+          </div>`
+        : `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}">
+            <div class="pred-choices">
+                ${choiceBtnHTML("1", "1", shortName(f.home_name))}
+                ${choiceBtnHTML("N", "N", "Nul")}
+                ${choiceBtnHTML("2", "2", shortName(f.away_name))}
+            </div>
           </div>`;
 
     card.innerHTML = `
@@ -230,17 +240,6 @@ function isPlayed(f) {
     return f.status === "Terminé" && f.home_score != null && f.away_score != null;
 }
 
-function emojiFor(f, pH, pA) {
-    const played = isPlayed(f);
-    const exact = pA === undefined || (pH === f.home_score && pA === f.away_score);
-    const winnerPred = pH > (pA || 0) ? "home" : pH < (pA || 0) ? "away" : "draw";
-    const actual = f.home_score > f.away_score ? "home" : f.home_score < f.away_score ? "away" : "draw";
-    if (!played) return { emoji: "⏳", cls: "pred-emoji--pending", label: "En attente du résultat" };
-    if (exact) return { emoji: "🎯", cls: "pred-emoji--exact", label: "Score exact" };
-    if (winnerPred === actual) return { emoji: "👍", cls: "pred-emoji--winner", label: "Bon vainqueur" };
-    return { emoji: "❌", cls: "pred-emoji--wrong", label: "Prédiction fausse" };
-}
-
 function computeVerdict(card, f, votesForFixture) {
     const verdict = card.querySelector("[data-verdict]");
     if (!verdict) return;
@@ -248,33 +247,23 @@ function computeVerdict(card, f, votesForFixture) {
     const total = votesForFixture.length;
     if (total === 0) { verdict.innerHTML = ""; return; }
 
-    // Score "communauté" = arrondi moyen des scores prédits
-    const avgH = Math.round(votesForFixture.reduce((s, v) => s + (v.home_pred_score || 0), 0) / total);
-    const avgA = Math.round(votesForFixture.reduce((s, v) => s + (v.away_pred_score || 0), 0) / total);
+    const c1 = votesForFixture.filter(v => v.choice === "1").length;
+    const cN = votesForFixture.filter(v => v.choice === "N").length;
+    const c2 = votesForFixture.filter(v => v.choice === "2").length;
+    const bestChoice = c1 >= cN && c1 >= c2 ? "1" : c2 >= cN && c2 >= c1 ? "2" : "N";
+    const bestCount = Math.max(c1, cN, c2);
 
-    const played = f.status === "Terminé" && f.home_score != null && f.away_score != null;
+    const played = isPlayed(f);
     if (!played) {
-        verdict.innerHTML = `<span class="verdict-chip verdict-chip--pending">Public : ${escapeHTML(shortName(f.home_name))} ${avgH} - ${avgA} ${escapeHTML(shortName(f.away_name))}</span>`;
+        const lbl = bestChoice === "1" ? shortName(f.home_name) : bestChoice === "2" ? shortName(f.away_name) : "Nul";
+        verdict.innerHTML = `<span class="verdict-chip verdict-chip--pending">Public : ${escapeHTML(lbl)} (${bestCount} voix)</span>`;
         return;
     }
 
-    const scoreExact = avgH === f.home_score && avgA === f.away_score;
-    const winnerPred = avgH > avgA ? "home" : avgH < avgA ? "away" : "draw";
-    const actual = f.home_score > f.away_score ? "home" : f.home_score < f.away_score ? "away" : "draw";
-    const winnerOK = winnerPred === actual;
-
-    let emoji, cls, text;
-    if (scoreExact) {
-        emoji = "🎯"; cls = "verdict-chip--good";
-        text = `Score exact : ${avgH} - ${avgA}`;
-    } else if (winnerOK) {
-        emoji = "👍"; cls = "verdict-chip--winner";
-        text = `Bon vainqueur : ${avgH} - ${avgA}`;
-    } else {
-        emoji = "❌"; cls = "verdict-chip--bad";
-        text = `Faux : ${avgH} - ${avgA} (réel ${f.home_score} - ${f.away_score})`;
-    }
-    verdict.innerHTML = `<span class="verdict-chip ${cls}">${emoji} ${escapeHTML(text)}</span>`;
+    const actual = f.home_score > f.away_score ? "1" : f.home_score < f.away_score ? "2" : "N";
+    const ok = bestChoice === actual;
+    const lbl = bestChoice === "1" ? shortName(f.home_name) : bestChoice === "2" ? shortName(f.away_name) : "Nul";
+    verdict.innerHTML = `<span class="verdict-chip ${ok ? "verdict-chip--good" : "verdict-chip--bad"}">${ok ? "✔" : "✘"} ${escapeHTML(lbl)} ${ok ? "majorité juste" : "majorité fausse"}</span>`;
 }
 
 function shortName(name) {
@@ -301,30 +290,24 @@ function renderVoteStats(fixtureCard, votesForFixture, myPred) {
         return;
     }
 
-    // Répartition des pronostics par vainqueur prédit (dom / nul / ext)
-    const count = c => votesForFixture.filter(v =>
-        (v.home_pred_score == null || v.away_pred_score == null) ? false :
-        (v.home_pred_score > v.away_pred_score ? "home" : v.home_pred_score < v.away_pred_score ? "away" : "draw") === c
-    ).length;
-    const pHome = Math.round((count("home") / total) * 100);
-    const pDraw = Math.round((count("draw") / total) * 100);
+    // Répartition des choix 1 / N / 2
+    const c1 = votesForFixture.filter(v => v.choice === "1").length;
+    const cN = votesForFixture.filter(v => v.choice === "N").length;
+    const c2 = votesForFixture.filter(v => v.choice === "2").length;
+    const pHome = Math.round((c1 / total) * 100);
+    const pDraw = Math.round((cN / total) * 100);
     const pAway = 100 - pHome - pDraw;
 
-    // Score le plus voté (mode) pour affichage
-    const modes = {};
-    votesForFixture.filter(v => v.home_pred_score != null).forEach(v => {
-        const k = `${v.home_pred_score}-${v.away_pred_score}`;
-        modes[k] = (modes[k] || 0) + 1;
-    });
-    let topScore = "";
-    let topN = 0;
-    Object.keys(modes).forEach(k => {
-        if (modes[k] > topN) { topN = modes[k]; topScore = k; }
-    });
-    topScore = topScore ? "· Score le plus voté : " + topScore : "";
+    // Choix le plus voté (mode)
+    const counts = { "1": c1, "N": cN, "2": c2 };
+    let topChoice = "1", topN = -1;
+    Object.keys(counts).forEach(k => { if (counts[k] > topN) { topN = counts[k]; topChoice = k; } });
+    const homeName = escapeHTML(shortName(votesForFixture[0].home_name || ""));
+    const awayName = escapeHTML(shortName(votesForFixture[0].away_name || ""));
+    const topLabel = topChoice === "1" ? homeName : topChoice === "2" ? awayName : "Nul";
 
     statsEl.innerHTML = `
-        <div class="vote-stat-row"><span>${escapeHTML(shortName(votesForFixture[0].home_name || ""))}</span>
+        <div class="vote-stat-row"><span>${homeName}</span>
             <div class="vote-stat-bar"><div class="vote-stat-fill vote-stat-fill--home" style="width:${pHome}%"></div></div>
             <span class="vote-stat-pct">${pHome}%</span></div>
         <div class="vote-stat-row"><span>Nul</span>
@@ -335,13 +318,7 @@ function renderVoteStats(fixtureCard, votesForFixture, myPred) {
             <span class="vote-stat-pct">${pAway}%</span></div>
     `;
     statsEl.classList.add("visible");
-    countEl.textContent = total + (total > 1 ? " votes" : " vote") + " " + topScore;
-
-    if (myPred && myPred.home_pred_score != null) {
-        const h = myPred.home_pred_score, a = myPred.away_pred_score;
-        const line = fixtureCard.querySelector(".pred-saved-line");
-        if (line) line.innerHTML = `Mon pronostic : <b>${h} - ${a}</b> <button class="pred-edit-mini" data-edit-pred>Modifier</button>`;
-    }
+    countEl.textContent = total + (total > 1 ? " votes" : " vote") + " · " + topLabel + " le + voté";
 }
 
 /* --- Effet 3D tilt --- */
@@ -397,8 +374,38 @@ async function init() {
 
     const fixtures = data.fixtures || [];
     grid.innerHTML = "";
-    if (fixtures.length === 0) {
-        grid.innerHTML = `<div class="empty-state">Aucun match à venir.</div>`;
+
+    // Sélection éditoriale curée depuis la webapp (curation → push git)
+    let selection = null;
+    try {
+        const sres = await fetch("selection.json");
+        if (sres.ok) {
+            const s = await sres.json();
+            if (s && Array.isArray(s.match_ids) && s.match_ids.length) selection = s;
+        }
+    } catch (e) { console.error(e); }
+
+    let displayFixtures = [];
+    if (selection) {
+        const ids = new Set(selection.match_ids.map(String));
+        displayFixtures = fixtures.filter(f => ids.has(String(f.id)));
+        const banner = document.createElement("div");
+        banner.className = "day-header";
+        banner.style.justifyContent = "center";
+        banner.style.cursor = "default";
+        banner.innerHTML = `<span class="day-header-tag">📋 ${escapeHTML(selection.label || "Matchs de la semaine")}</span>`;
+        grid.appendChild(banner);
+    } else {
+        const note = document.createElement("div");
+        note.className = "day-header";
+        note.style.justifyContent = "center";
+        note.style.cursor = "default";
+        note.innerHTML = `<span class="day-header-tag">📋 Aucune sélection publiée</span>`;
+        grid.appendChild(note);
+    }
+
+    if (displayFixtures.length === 0) {
+        grid.innerHTML = `<div class="empty-state">${selection ? "Aucun match sélectionné cette semaine." : "Aucune sélection publiée pour le moment."}</div>`;
         return;
     }
     if (badge) badge.textContent = "Saison " + data.season;
@@ -409,13 +416,13 @@ async function init() {
     const myVid = getVisitorId();
     const myPreds = {};
     votes.forEach(v => {
-        if (v.visitor_id === myVid && v.home_pred_score != null)
-            myPreds[v.fixture_id] = { home_pred_score: v.home_pred_score, away_pred_score: v.away_pred_score };
+        if (v.visitor_id === myVid && v.choice)
+            myPreds[v.fixture_id] = { choice: v.choice };
     });
 
     // Groupement par journée (matchday) — en-têtes + barre de sélection
     const byDay = new Map();
-    fixtures.forEach(f => {
+    displayFixtures.forEach(f => {
         const day = f.matchday || 0;
         if (!byDay.has(day)) byDay.set(day, []);
         byDay.get(day).push(f);
@@ -456,48 +463,32 @@ async function init() {
             renderVoteStats(card, votesForFixture, myPreds[f.id] || null);
             computeVerdict(card, f, votesForFixture);
 
-            // Si j'ai déjà pronostiqué ce match → afficher mon score + emoji
+            // Mon choix déjà enregistré → surligner le bouton + afficher succès/échec
             const myPred = myPreds[f.id];
             if (myPred) {
+                const actual = isPlayed(f) ? (f.home_score > f.away_score ? "1" : f.home_score < f.away_score ? "2" : "N") : null;
+                const got = actual && myPred.choice === actual;
+                const lbl = myPred.choice === "1" ? shortName(f.home_name) : myPred.choice === "2" ? shortName(f.away_name) : "Nul";
+                card.querySelectorAll(".pred-choice-btn").forEach(b => {
+                    if (b.getAttribute("data-choice") === myPred.choice) b.classList.add("is-mychoice");
+                });
                 const zone = card.querySelector(".vote-zone");
-                const emoji = emojiFor(f, myPred.home_pred_score, myPred.away_pred_score);
-                if (zone) {
-                    zone.innerHTML = `
-                        <div class="pred-line">
-                            <span class="pred-emoji ${emoji.cls}">${emoji.emoji}</span>
-                            <span class="pred-score">${myPred.home_pred_score} - ${myPred.away_pred_score}</span>
-                        </div>
-                        <div class="pred-status">${emoji.label}</div>
-                        ${isPlayed(f) ? `<div class="pred-real">Réel : ${f.home_score} - ${f.away_score}</div>` : ""}
-                    `;
-                } else {
-                    // match joué, pas de .vote-zone → ajouter une ligne sous la carte
-                    const addon = document.createElement("div");
-                    addon.className = "vote-zone";
-                    addon.innerHTML = `
-                        <div class="pred-line">
-                            <span class="pred-emoji ${emoji.cls}">${emoji.emoji}</span>
-                            <span class="pred-score">${myPred.home_pred_score} - ${myPred.away_pred_score}</span>
-                        </div>
-                        <div class="pred-status">${emoji.label}</div>
-                        <div class="pred-real">Réel : ${f.home_score} - ${f.away_score}</div>
-                    `;
-                    card.appendChild(addon);
-                }
-                card.querySelector("[data-save-pred]")?.remove();
+                const line = document.createElement("div");
+                line.className = "pred-myline";
+                line.innerHTML = `Mon choix : <b>${escapeHTML(lbl)}</b>${isPlayed(f) ? (got ? ` <span class="pred-verdict-badge good"><span class="pred-verdict-symbol">✔</span> Succès</span>` : ` <span class="pred-verdict-badge bad"><span class="pred-verdict-symbol">✘</span> Échec</span>`) : ""}`;
+                if (zone) zone.appendChild(line);
+                if (isPlayed(f)) card.querySelectorAll("[data-save-pred]").forEach(b => b.remove());
             }
 
-            const saveBtn = card.querySelector("[data-save-pred]");
-            if (saveBtn) {
+            card.querySelectorAll("[data-save-pred]").forEach(saveBtn => {
                 saveBtn.addEventListener("click", async () => {
-                    const hs = Number(card.querySelector("[data-pred-home]").value);
-                    const as_ = Number(card.querySelector("[data-pred-away]").value);
-                    if (isNaN(hs) || isNaN(as_) || hs < 0 || as_ < 0) { toast("Entre un score valide (ex: 2 - 1)"); return; }
+                    const choice = saveBtn.getAttribute("data-choice");
+                    if (!choice) return;
                     saveBtn.disabled = true;
                     try {
-                        await saveVote(f, hs, as_);
+                        await saveVote(f, choice);
                         toast("Pronostic enregistré ✓");
-                        myPreds[f.id] = { home_pred_score: hs, away_pred_score: as_ };
+                        myPreds[f.id] = { choice };
                         votes = await fetchVotes();
                         paintDay(day);
                     } catch (err) {
@@ -506,7 +497,7 @@ async function init() {
                         toast("Erreur lors de l'envoi, réessaie.");
                     }
                 });
-            }
+            });
         });
     };
 
