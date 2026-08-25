@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-24T18:33:45",
+  "generated_at": "2026-08-25T13:02:31",
   "season": "2026-2027",
   "count": 380,
   "fixtures": [
@@ -129,13 +129,13 @@
       "matchday": 1,
       "competition": "EPL",
       "date": "2026-08-23",
-      "status": "En cours",
+      "status": "Terminé",
       "home_team_id": "newcastle",
       "away_team_id": "liverpool",
       "home_name": "Newcastle",
       "away_name": "Liverpool",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 2,
+      "away_score": 2,
       "round_label": "J1"
     },
     {
