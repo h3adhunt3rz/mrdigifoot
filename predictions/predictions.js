@@ -410,10 +410,10 @@ async function init() {
             const statusEl = card.querySelector("[data-status]");
             if (statusEl) {
                 if (myChoice != null) {
-                    statusEl.textContent = 'Pronostiqué';
+                    statusEl.textContent = '✅ Pronostiqué';
                     statusEl.className = 'pred-status pred-status--good';
                 } else if (played) {
-                    statusEl.textContent = 'Non pronostiqué';
+                    statusEl.textContent = '❌ Non pronostiqué';
                     statusEl.className = 'pred-status pred-status--bad';
                 } else {
                     statusEl.textContent = '⏳ En attente';
