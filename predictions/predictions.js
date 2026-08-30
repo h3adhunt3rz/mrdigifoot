@@ -203,10 +203,8 @@ function buildCard(f) {
 
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
-        <div class="card-top-bar">
-          <span class="card-date-top">${f.date ? formatDateDMY(f.date) : ""}</span>
-          <span class="card-badge-top">🦁 EPL ${f.season ? f.season.slice(0, 4) + "/" + f.season.slice(5) : ""}</span>
-        </div>
+        ${f.date ? `<span class="card-date-top">${formatDateDMY(f.date)}</span>` : ""}
+        <span class="card-badge-top card-badge-top--epl">🦁 EPL ${f.season ? f.season.slice(2, 4) + "/" + f.season.slice(5, 7) : ""}</span>
         ${statusHTML}
         <div class="fx-arena">
           <div class="fx-team home ${played ? (f.home_score > f.away_score ? "result-win" : (f.home_score < f.away_score ? "result-loss" : "")) : ""}">
