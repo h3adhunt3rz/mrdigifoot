@@ -199,6 +199,7 @@ body:has(a:hover) #cursor::after {
     border: 1px solid transparent;
     transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
     white-space: nowrap;
+    cursor: pointer;
 }
 .site-nav-link:hover {
     color: var(--text);
@@ -207,7 +208,7 @@ body:has(a:hover) #cursor::after {
 }
 .site-nav-link.is-current {
     color: var(--text);
-    background: linear-gradient(180deg, rgba(var(--wine-rgb), 0.22), rgba(var(--wine-rgb), 0.06));
+    background: linear-gradient(180deg, rgba(var(--wine-rgb), 0.22) 0%, rgba(var(--wine-rgb), 0.06) 100%);
     border: 1px solid rgba(var(--wine-rgb), 0.45);
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 15px rgba(var(--wine-rgb), 0.2);
 }
@@ -216,9 +217,15 @@ body:has(a:hover) #cursor::after {
     background: linear-gradient(180deg, rgba(var(--wine-rgb), 0.22), rgba(var(--wine-rgb), 0.06));
     border: 1px solid rgba(var(--wine-rgb), 0.45);
 }
-.site-nav-link--cta:hover { box-shadow: 0 0 16px rgba(var(--wine-rgb), 0.35); }
+.site-nav-link--cta:hover {
+    color: #fff;
+    background: linear-gradient(180deg, rgba(var(--wine-rgb), 0.30), rgba(var(--wine-rgb), 0.10));
+    box-shadow: 0 0 16px rgba(var(--wine-rgb), 0.35);
+}
 .site-nav-link--cta.is-current {
+    color: #fff;
     background: linear-gradient(180deg, rgba(var(--wine-rgb), 0.35), rgba(var(--wine-rgb), 0.12));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.15), 0 0 15px rgba(var(--wine-rgb), 0.25);
 }
 
 @media (max-width: 640px) {
