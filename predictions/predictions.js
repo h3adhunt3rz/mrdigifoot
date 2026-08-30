@@ -496,21 +496,17 @@ async function init() {
         chip.addEventListener("click", () => {
             bar.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
-            updateBarLabel(day);
             paintDay(day);
         });
         bar.appendChild(chip);
     });
 
-    // Label centré : Saison + Journée
+    // Label centré : Saison uniquement
     const label = document.createElement("div");
     label.className = "bar-label";
     bar.insertBefore(label, bar.firstChild);
-    const updateBarLabel = (day) => {
-        const seasonShort = data.season ? data.season.replace("-", "/") : "";
-        label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span> <span class="bar-label-sep">·</span> <span class="bar-label-day">Journée ${day}</span>`;
-    };
-    updateBarLabel(selectedDay);
+    const seasonShort = data.season ? data.season.replace("-", "/") : "";
+    label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
 
     paintDay(selectedDay);
     enhanceCards3D(grid);
