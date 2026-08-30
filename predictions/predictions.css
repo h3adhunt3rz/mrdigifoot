@@ -628,6 +628,9 @@ body {
     position: relative;
     z-index: 4;
 }
+.card-top-bar .card-badge-top {
+    margin-left: auto;
+}
 
 .card-date-top,
 .card-round-top,

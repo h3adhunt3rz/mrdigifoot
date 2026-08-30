@@ -206,7 +206,6 @@ function buildCard(f) {
         <div class="card-top-bar">
           <span class="card-date-top">${f.date ? formatDateDMY(f.date) : ""}</span>
           <span class="card-badge-top">🦁 EPL ${f.season ? f.season.slice(0, 4) + "/" + f.season.slice(5) : ""}</span>
-          <span class="card-round-top">${roundLabel(f)}</span>
         </div>
         ${statusHTML}
         <div class="fx-arena">
