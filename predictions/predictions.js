@@ -161,7 +161,7 @@ async function saveVote(f, choice) {
     if (!res.ok) throw new Error("save vote failed: " + res.status);
 }
 
-/* --- Rendu d'une carte match avec zone de vote (identique webapp) --- */
+/* --- Rendu d'une carte match avec zone de vote --- */
 function buildCard(f) {
     const card = document.createElement("div");
     card.className = "ratio-4-5-card";
@@ -170,17 +170,15 @@ function buildCard(f) {
         f.home_score !== null && f.home_score !== undefined &&
         f.away_score !== null && f.away_score !== undefined;
 
-    const scoreL = played ? String(f.home_score) : '';
-    const scoreR = played ? String(f.away_score) : '';
-
     const roundText = f.round_label || (f.matchday ? "J" + f.matchday : "");
     const seasonParts = f.season ? f.season.split("-") : [];
     const seasonShort = seasonParts.length === 2 ? seasonParts[0].slice(-2) + "/" + seasonParts[1].slice(-2) : "";
 
-    const choiceBtnHTML = (val, label, sub, dim) => `
-        <button class="pred-choice-btn ${dim ? "is-dim" : ""}" ${dim ? "disabled" : ""} ${dim ? "" : `data-save-pred="${escapeAttr(f.id)}" data-choice="${val}"`}>
+    const choiceBtnHTML = (val, label, sub) => `
+        <button class="pred-choice-btn" data-save-pred="${escapeAttr(f.id)}" data-choice="${val}">
             <span class="pred-choice-val">${label}</span>
             <span class="pred-choice-sub">${escapeHTML(sub)}</span>
+            <span class="pred-choice-pct" data-pct="${val}">--%</span>
         </button>`;
 
     card.innerHTML = `
@@ -195,7 +193,7 @@ function buildCard(f) {
           </div>
           <div class="fx-scoreboard">
             <div class="fx-score-nums">
-              ${played ? `<span class="fx-score-n">${scoreL}</span><span class="fx-score-sep">:</span><span class="fx-score-n">${scoreR}</span>` : `<span class="fx-score-n vs-unplayed" style="color:#fff;font-size:3.8rem;">VS</span>`}
+              ${played ? `<span class="fx-score-n">${f.home_score}</span><span class="fx-score-sep">:</span><span class="fx-score-n">${f.away_score}</span>` : `<span class="fx-score-n vs-unplayed" style="color:#fff;font-size:3.8rem;">VS</span>`}
             </div>
           </div>
           <div class="fx-team away ${played ? (f.away_score > f.home_score ? "result-win" : (f.away_score < f.home_score ? "result-loss" : "")) : ""}">
@@ -205,19 +203,12 @@ function buildCard(f) {
         </div>
         <hr class="card-sep" />
         <div class="prediction-zone">
-          <div class="pred-myverdict" data-myverdict>
-            <div class="pred-mychoice">
-              <span class="pred-mychoice-val">–</span>
-              <span class="pred-who">Mon choix</span>
-            </div>
-            <span class="pred-status-text pred-status-text--muted">Non pronostiqué</span>
-          </div>
+          <div class="pred-status" data-status>⏳ En attente</div>
           <div class="pred-choices" data-choices>
             ${choiceBtnHTML("1", "1", shortName(f.home_name))}
             ${choiceBtnHTML("N", "N", "Nul")}
             ${choiceBtnHTML("2", "2", shortName(f.away_name))}
           </div>
-          <div class="pred-stats-slot" data-stats></div>
         </div>
         <div class="fx-card-bottom">
           <span class="canvas-watermark">@mrdigifoot</span>
@@ -411,53 +402,52 @@ async function init() {
             const actualChoice = played ? (f.home_score > f.away_score ? "1" : f.home_score < f.away_score ? "2" : "N") : null;
             const gotIt = played && myChoice != null && myChoice === actualChoice;
 
-            // 1. Mon choix + verdict
-            const myVerdictEl = card.querySelector("[data-myverdict]");
-            if (myVerdictEl) {
-                const myChoiceVal = myVerdictEl.querySelector(".pred-mychoice-val");
-                const myChoiceText = myChoice != null ? (myChoice === "1" ? "1" : myChoice === "2" ? "2" : "N") : "–";
-                if (myChoiceVal) myChoiceVal.textContent = myChoiceText;
-
-                let verdictHTML = '';
-                if (!played) {
-                    verdictHTML = myChoice != null
-                        ? `<span class="pred-status-text">⏳ En attente</span>`
-                        : `<span class="pred-status-text">⏳ En attente</span>`;
-                } else if (myChoice != null) {
-                    verdictHTML = gotIt
-                        ? `<span class="pred-verdict-badge good"><span class="pred-verdict-symbol">✔</span> Succès</span>`
-                        : `<span class="pred-verdict-badge bad"><span class="pred-verdict-symbol">✘</span> Échec</span>`;
+            // 1. Statut
+            const statusEl = card.querySelector("[data-status]");
+            if (statusEl) {
+                if (played) {
+                    statusEl.textContent = myChoice != null ? 'Pronostiqué' : 'Non pronostiqué';
+                    statusEl.className = 'pred-status' + (myChoice != null ? '' : ' pred-status--muted');
                 } else {
-                    verdictHTML = `<span class="pred-status-text pred-status-text--muted">Non pronostiqué</span>`;
+                    statusEl.textContent = '⏳ En attente';
+                    statusEl.className = 'pred-status';
                 }
-                myVerdictEl.querySelectorAll('.pred-status-text, .pred-verdict-badge').forEach(e => e.remove());
-                myVerdictEl.insertAdjacentHTML('beforeend', verdictHTML);
             }
 
-            // 2. Boutons 1/N/2 — surligner mon choix, griser si match joué
+            // 2. Boutons 1/N/2 + pourcentages
             const choicesEl = card.querySelector("[data-choices]");
+            const total = votesForFixture.length;
+            const c1 = votesForFixture.filter(v => v.choice === "1").length;
+            const cN = votesForFixture.filter(v => v.choice === "N").length;
+            const c2 = votesForFixture.filter(v => v.choice === "2").length;
+            const p1 = total ? Math.round(c1 / total * 100) : 0;
+            const pN = total ? Math.round(cN / total * 100) : 0;
+            const p2 = total ? 100 - p1 - pN : 0;
+            const pctMap = { "1": p1, "N": pN, "2": p2 };
+
             if (choicesEl) {
                 choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
                     const c = b.getAttribute("data-choice");
+                    const pctEl = b.querySelector("[data-pct]");
+
+                    // Pourcentage sous chaque bouton
+                    if (pctEl) {
+                        pctEl.textContent = total ? pctMap[c] + '%' : '--%';
+                    }
+
+                    // Mon choix → surligner
                     if (c === myChoice) b.classList.add("is-mychoice");
+
+                    // Match joué → bloquer le vote
                     if (played) {
                         b.classList.add("is-dim");
                         b.disabled = true;
-                        if (c !== myChoice) b.style.display = "none";
+                        b.removeAttribute("data-save-pred");
                     }
                 });
-                if (played && myChoice == null) {
-                    choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
-                        b.classList.add("is-dim");
-                        b.disabled = true;
-                    });
-                }
             }
 
-            // 3. Stats communauté
-            renderVoteStats(card, votesForFixture);
-
-            // 4. Vote → Supabase
+            // 3. Vote → Supabase
             card.querySelectorAll("[data-save-pred]").forEach(saveBtn => {
                 saveBtn.addEventListener("click", async () => {
                     const choice = saveBtn.getAttribute("data-choice");
