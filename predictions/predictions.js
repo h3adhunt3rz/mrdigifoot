@@ -203,13 +203,15 @@ function buildCard(f) {
 
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
-        ${f.date ? `<span class="card-date-top">${formatDateDMY(f.date)}</span>` : ""}
-        <span class="card-round-top">${roundLabel(f)}</span>
-        <span class="card-badge-top">🦁 EPL ${f.season ? f.season.slice(0, 4) + "/" + f.season.slice(5) : ""}</span>
+        <div class="card-top-bar">
+          <span class="card-date-top">${f.date ? formatDateDMY(f.date) : ""}</span>
+          <span class="card-badge-top">🦁 EPL ${f.season ? f.season.slice(0, 4) + "/" + f.season.slice(5) : ""}</span>
+          <span class="card-round-top">${roundLabel(f)}</span>
+        </div>
         ${statusHTML}
         <div class="fx-arena">
-          <div class="fx-team home ${played ? "result-win" : ""} ${played && f.home_score < f.away_score ? "result-loss" : ""}">
-            ${logoHTML(f.home_team_id, 80)}
+          <div class="fx-team home ${played ? (f.home_score > f.away_score ? "result-win" : (f.home_score < f.away_score ? "result-loss" : "")) : ""}">
+            ${logoHTML(f.home_team_id, 76)}
             <span class="fx-team-name">${escapeHTML(f.home_name)}</span>
           </div>
           <div class="fx-scoreboard">
@@ -217,20 +219,20 @@ function buildCard(f) {
               ${scoreHTML}
             </div>
           </div>
-          <div class="fx-team away ${played ? "result-win" : ""} ${played && f.away_score < f.home_score ? "result-loss" : ""}">
-            ${logoHTML(f.away_team_id, 80)}
+          <div class="fx-team away ${played ? (f.away_score > f.home_score ? "result-win" : (f.away_score < f.home_score ? "result-loss" : "")) : ""}">
+            ${logoHTML(f.away_team_id, 76)}
             <span class="fx-team-name">${escapeHTML(f.away_name)}</span>
           </div>
         </div>
         <hr class="card-sep" />
         <div class="fx-prediction-verdict" data-verdict></div>
+        ${voteZoneHTML}
+        <div class="vote-stats" data-stats></div>
+        <div class="vote-count" data-count></div>
         <div class="fx-card-bottom">
           <span class="canvas-watermark">@mrdigifoot</span>
         </div>
       </div>
-      ${voteZoneHTML}
-      <div class="vote-stats" data-stats></div>
-      <div class="vote-count" data-count></div>
     `;
     return card;
 }

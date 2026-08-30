@@ -258,17 +258,16 @@ body {
 
 /* Badge résultat / en direct */
 .card-result-badge {
-    position: absolute;
-    top: 64px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: inline-block;
+    align-self: center;
+    margin: 0 auto 8px;
     z-index: 4;
     font-family: var(--font-display);
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    padding: 5px 12px;
+    padding: 4px 12px;
     border-radius: 999px;
     background: rgba(46, 204, 113, 0.18);
     border: 1px solid rgba(46, 204, 113, 0.6);
@@ -514,7 +513,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 20px;
+    padding: 8px;
     position: relative;
     overflow: hidden;
     transform-style: preserve-3d;
@@ -605,11 +604,12 @@ body {
     flex-direction: column;
     height: 100%;
     min-height: 100%;
-    padding: 28px 16px 16px;
+    padding: 16px;
     gap: 0;
-    border-radius: 20px;
+    border-radius: 14px;
     overflow: hidden;
     transform-style: preserve-3d;
+    box-sizing: border-box;
 }
 
 .fx-card-inner > * {
@@ -618,57 +618,43 @@ body {
 }
 
 /* Badges haut de carte */
-.card-date-top {
-    position: absolute;
-    top: 14px;
-    left: 14px;
+.card-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 6px;
+    margin-bottom: 10px;
+    position: relative;
     z-index: 4;
+}
+
+.card-date-top,
+.card-round-top,
+.card-badge-top {
+    position: static;
+    transform: none;
     font-family: var(--font-brand);
-    font-size: 0.72rem;
+    font-size: 0.68rem;
     font-weight: 400;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    padding: 6px 12px;
+    padding: 4px 8px;
     border-radius: 6px;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.65);
+    white-space: nowrap;
+}
+.card-date-top {
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--text-muted);
-    white-space: nowrap;
 }
 .card-round-top {
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 4;
-    font-family: var(--font-brand);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.12);
     color: var(--text-muted);
-    white-space: nowrap;
 }
 .card-badge-top {
-    position: absolute;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 4;
-    font-family: var(--font-brand);
-    font-size: 0.72rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 6px 12px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.6);
     border: 1px solid rgba(192, 157, 60, 0.4);
     color: var(--gold-soft);
-    white-space: nowrap;
 }
 
 /* Séparateur */
