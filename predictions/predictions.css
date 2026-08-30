@@ -936,8 +936,14 @@ body {
     gap: 8px;
     width: 100%;
 }
-.pred-choice-btn {
+.pred-choice-col {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.pred-choice-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1070,7 +1076,6 @@ body {
     width: 100%;
 }
 .pred-choice-btn {
-    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
