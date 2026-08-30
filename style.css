@@ -154,6 +154,7 @@ body:has(a:hover) #cursor::after {
     margin: 0 auto;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 16px;
 }
 .site-nav-brand-link {
@@ -287,8 +288,8 @@ body:has(a:hover) #cursor::after {
 .hero-titles {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    text-align: left;
+    align-items: center;
+    text-align: center;
 }
 
 h1 {
