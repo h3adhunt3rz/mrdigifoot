@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-25T13:02:31",
+  "generated_at": "2026-08-30T17:32:44",
   "season": "2026-2027",
   "count": 380,
   "fixtures": [
@@ -144,13 +144,13 @@
       "matchday": 1,
       "competition": "EPL",
       "date": "2026-08-24",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "fulham",
       "away_team_id": "chelsea",
       "home_name": "Fulham",
       "away_name": "Chelsea",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 2,
+      "away_score": 3,
       "round_label": "J1"
     },
     {
@@ -159,13 +159,13 @@
       "matchday": 2,
       "competition": "EPL",
       "date": "2026-08-28",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "crystal-palace",
       "away_team_id": "manchester-city",
       "home_name": "Crystal Palace",
       "away_name": "Manchester City",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 1,
+      "away_score": 4,
       "round_label": "J2"
     },
     {
@@ -174,13 +174,13 @@
       "matchday": 2,
       "competition": "EPL",
       "date": "2026-08-29",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "bournemouth",
       "away_team_id": "everton",
       "home_name": "Bournemouth",
       "away_name": "Everton",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 1,
+      "away_score": 1,
       "round_label": "J2"
     },
     {
@@ -189,13 +189,13 @@
       "matchday": 2,
       "competition": "EPL",
       "date": "2026-08-29",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "coventry-city",
       "away_team_id": "hull-city",
       "home_name": "Coventry City",
       "away_name": "Hull City",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 0,
+      "away_score": 1,
       "round_label": "J2"
     },
     {
@@ -204,13 +204,13 @@
       "matchday": 2,
       "competition": "EPL",
       "date": "2026-08-29",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "liverpool",
       "away_team_id": "nottingham-forest",
       "home_name": "Liverpool",
       "away_name": "Nottingham Forest",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 2,
+      "away_score": 2,
       "round_label": "J2"
     },
     {
@@ -219,13 +219,13 @@
       "matchday": 2,
       "competition": "EPL",
       "date": "2026-08-29",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "tottenham",
       "away_team_id": "newcastle",
       "home_name": "Tottenham",
       "away_name": "Newcastle",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 0,
+      "away_score": 2,
       "round_label": "J2"
     },
     {
@@ -664,21 +664,6 @@
       "round_label": "J5"
     },
     {
-      "id": "fotmob-epl-2026-2027-5795461",
-      "season": "2026-2027",
-      "matchday": 5,
-      "competition": "EPL",
-      "date": "2026-09-19",
-      "status": "À venir",
-      "home_team_id": "manchester-city",
-      "away_team_id": "sunderland",
-      "home_name": "Manchester City",
-      "away_name": "Sunderland",
-      "home_score": null,
-      "away_score": null,
-      "round_label": "J5"
-    },
-    {
       "id": "fotmob-epl-2026-2027-5795462",
       "season": "2026-2027",
       "matchday": 5,
@@ -749,6 +734,21 @@
       "away_team_id": "manchester-united",
       "home_name": "Fulham",
       "away_name": "Manchester United",
+      "home_score": null,
+      "away_score": null,
+      "round_label": "J5"
+    },
+    {
+      "id": "fotmob-epl-2026-2027-5795461",
+      "season": "2026-2027",
+      "matchday": 5,
+      "competition": "EPL",
+      "date": "2026-09-20",
+      "status": "À venir",
+      "home_team_id": "manchester-city",
+      "away_team_id": "sunderland",
+      "home_name": "Manchester City",
+      "away_name": "Sunderland",
       "home_score": null,
       "away_score": null,
       "round_label": "J5"
