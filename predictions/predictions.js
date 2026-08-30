@@ -201,9 +201,11 @@ function buildCard(f) {
             </div>
           </div>`;
 
+    const roundText = f.round_label || (f.matchday ? "J" + f.matchday : "");
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
         ${f.date ? `<span class="card-date-top">${formatDateDMY(f.date)}</span>` : ""}
+        ${roundText ? `<span class="card-round-top">${roundText}</span>` : ""}
         <span class="card-badge-top card-badge-top--epl">🦁 EPL ${f.season ? f.season.slice(2, 4) + "/" + f.season.slice(5, 7) : ""}</span>
         <div class="fx-arena">
           <div class="fx-team home ${played ? (f.home_score > f.away_score ? "result-win" : (f.home_score < f.away_score ? "result-loss" : "")) : ""}">
@@ -424,10 +426,6 @@ async function init() {
     const seasonShort = data.season ? data.season.replace("-", "/") : "";
     label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
     bar.appendChild(label);
-
-    const chipsContainer = document.createElement("div");
-    chipsContainer.className = "day-chips-container";
-    bar.appendChild(chipsContainer);
 
     appContainer.appendChild(bar);
 

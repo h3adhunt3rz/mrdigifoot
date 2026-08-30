@@ -637,6 +637,26 @@ body {
     color: var(--text-muted);
     white-space: nowrap;
 }
+.card-round-top {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(4px);
+    color: var(--gold-soft);
+    white-space: nowrap;
+}
+}
 .card-badge-top {
     position: absolute;
     top: 14px;
