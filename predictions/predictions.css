@@ -932,24 +932,16 @@ body {
    PRÉDICTION — boutons 1/N/2 + verdict + stats
    ========================================================= */
 .pred-choices {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto;
     gap: 8px;
     width: 100%;
     flex: 1;
     min-height: 0;
 }
-.pred-choice-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    min-width: 0;
-    min-height: 0;
-}
 .pred-choice-btn {
     width: 100%;
-    flex: 0 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1015,12 +1007,8 @@ body {
     font-size: 0.85rem;
     font-weight: 800;
     color: var(--text-muted);
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
+    text-align: center;
+    padding: 6px 0;
 }
 .pred-choice-btn.is-mychoice .pred-choice-pct { color: var(--gold-soft); }
     cursor: default;

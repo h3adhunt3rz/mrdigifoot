@@ -178,8 +178,9 @@ function buildCard(f) {
         <button class="pred-choice-btn" data-save-pred="${escapeAttr(f.id)}" data-choice="${val}">
             <span class="pred-choice-val">${label}</span>
             <span class="pred-choice-sub">${escapeHTML(sub)}</span>
-            <span class="pred-choice-pct" data-pct="${val}">--%</span>
         </button>`;
+
+    const pctHTML = (val) => `<span class="pred-choice-pct">${total ? pctMap[val] + '%' : '--%'}</span>`;
 
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
@@ -208,6 +209,9 @@ function buildCard(f) {
             ${choiceBtnHTML("1", "1", shortName(f.home_name))}
             ${choiceBtnHTML("N", "N", "Nul")}
             ${choiceBtnHTML("2", "2", shortName(f.away_name))}
+            ${pctHTML("1")}
+            ${pctHTML("N")}
+            ${pctHTML("2")}
           </div>
         </div>
         <div class="fx-card-bottom">
@@ -426,19 +430,16 @@ async function init() {
             const pctMap = { "1": p1, "N": pN, "2": p2 };
 
             if (choicesEl) {
+                // Pourcentages
+                choicesEl.querySelectorAll(".pred-choice-pct").forEach((pctEl, i) => {
+                    const vals = ["1", "N", "2"];
+                    pctEl.textContent = total ? pctMap[vals[i]] + '%' : '--%';
+                });
+
+                // Boutons 1/N/2
                 choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
                     const c = b.getAttribute("data-choice");
-                    const pctEl = b.querySelector("[data-pct]");
-
-                    // Pourcentage sous chaque bouton
-                    if (pctEl) {
-                        pctEl.textContent = total ? pctMap[c] + '%' : '--%';
-                    }
-
-                    // Mon choix → surligner
                     if (c === myChoice) b.classList.add("is-mychoice");
-
-                    // Match joué → bloquer le vote
                     if (played) {
                         b.classList.add("is-dim");
                         b.disabled = true;
