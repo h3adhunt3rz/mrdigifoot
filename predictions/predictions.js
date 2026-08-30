@@ -161,7 +161,7 @@ async function saveVote(f, choice) {
     if (!res.ok) throw new Error("save vote failed: " + res.status);
 }
 
-/* --- Rendu d'une carte match avec zone de vote --- */
+/* --- Rendu d'une carte match avec zone de vote (identique webapp) --- */
 function buildCard(f) {
     const card = document.createElement("div");
     card.className = "ratio-4-5-card";
@@ -170,13 +170,12 @@ function buildCard(f) {
         f.home_score !== null && f.home_score !== undefined &&
         f.away_score !== null && f.away_score !== undefined;
 
-    const scoreHTML = played
-        ? `<span class="fx-score-n">${f.home_score}</span><span class="fx-score-sep">:</span><span class="fx-score-n">${f.away_score}</span>`
-        : `<span class="fx-score-n vs-unplayed" style="color:#fff;">VS</span>`;
+    const scoreL = played ? String(f.home_score) : "–";
+    const scoreR = played ? String(f.away_score) : "–";
 
-    const statusHTML = played
-        ? `<span class="card-result-badge">Résultat final</span>`
-        : (f.status === "En cours" ? `<span class="card-result-badge card-result-badge--live">● En cours</span>` : "");
+    const roundText = f.round_label || (f.matchday ? "J" + f.matchday : "");
+    const seasonParts = f.season ? f.season.split("-") : [];
+    const seasonShort = seasonParts.length === 2 ? seasonParts[0].slice(-2) + "/" + seasonParts[1].slice(-2) : "";
 
     const choiceBtnHTML = (val, label, sub, dim) => `
         <button class="pred-choice-btn ${dim ? "is-dim" : ""}" ${dim ? "disabled" : ""} ${dim ? "" : `data-save-pred="${escapeAttr(f.id)}" data-choice="${val}"`}>
@@ -184,26 +183,6 @@ function buildCard(f) {
             <span class="pred-choice-sub">${escapeHTML(sub)}</span>
         </button>`;
 
-    const voteZoneHTML = played
-        ? `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}" data-played="1">
-            <div class="pred-choices pred-choices--filled">
-                ${choiceBtnHTML("1", "1", shortName(f.home_name), true)}
-                ${choiceBtnHTML("N", "N", "Nul", true)}
-                ${choiceBtnHTML("2", "2", shortName(f.away_name), true)}
-            </div>
-            <div class="pred-status-text pred-status-text--muted">Pronostics clos</div>
-          </div>`
-        : `<div class="vote-zone" data-fixture="${escapeAttr(f.id)}">
-            <div class="pred-choices">
-                ${choiceBtnHTML("1", "1", shortName(f.home_name))}
-                ${choiceBtnHTML("N", "N", "Nul")}
-                ${choiceBtnHTML("2", "2", shortName(f.away_name))}
-            </div>
-          </div>`;
-
-    const roundText = f.round_label || (f.matchday ? "J" + f.matchday : "");
-    const seasonParts = f.season ? f.season.split("-") : [];
-    const seasonShort = seasonParts.length === 2 ? seasonParts[0].slice(-2) + "/" + seasonParts[1].slice(-2) : "";
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
         ${f.date ? `<span class="card-date-top">${formatDateDMY(f.date)}</span>` : ""}
@@ -216,7 +195,9 @@ function buildCard(f) {
           </div>
           <div class="fx-scoreboard">
             <div class="fx-score-nums">
-              ${scoreHTML}
+              <span class="fx-score-n ${played ? "" : "vs-unplayed"}">${scoreL}</span>
+              <span class="fx-score-sep">:</span>
+              <span class="fx-score-n ${played ? "" : "vs-unplayed"}">${scoreR}</span>
             </div>
           </div>
           <div class="fx-team away ${played ? (f.away_score > f.home_score ? "result-win" : (f.away_score < f.home_score ? "result-loss" : "")) : ""}">
@@ -225,10 +206,21 @@ function buildCard(f) {
           </div>
         </div>
         <hr class="card-sep" />
-        <div class="fx-prediction-verdict" data-verdict></div>
-        ${voteZoneHTML}
-        <div class="vote-stats" data-stats></div>
-        <div class="vote-count" data-count></div>
+        <div class="prediction-zone">
+          <div class="pred-myverdict" data-myverdict>
+            <div class="pred-mychoice">
+              <span class="pred-mychoice-val">–</span>
+              <span class="pred-who">Mon choix</span>
+            </div>
+            <span class="pred-status-text pred-status-text--muted">Non pronostiqué</span>
+          </div>
+          <div class="pred-choices" data-choices>
+            ${choiceBtnHTML("1", "1", shortName(f.home_name))}
+            ${choiceBtnHTML("N", "N", "Nul")}
+            ${choiceBtnHTML("2", "2", shortName(f.away_name))}
+          </div>
+          <div class="pred-stats-slot" data-stats></div>
+        </div>
         <div class="fx-card-bottom">
           <span class="canvas-watermark">@mrdigifoot</span>
         </div>
@@ -240,32 +232,6 @@ function buildCard(f) {
 /* Verdict : comparaison du score prédit (médian des votes) avec le résultat réel */
 function isPlayed(f) {
     return f.status === "Terminé" && f.home_score != null && f.away_score != null;
-}
-
-function computeVerdict(card, f, votesForFixture) {
-    const verdict = card.querySelector("[data-verdict]");
-    if (!verdict) return;
-
-    const total = votesForFixture.length;
-    if (total === 0) { verdict.innerHTML = ""; return; }
-
-    const c1 = votesForFixture.filter(v => v.choice === "1").length;
-    const cN = votesForFixture.filter(v => v.choice === "N").length;
-    const c2 = votesForFixture.filter(v => v.choice === "2").length;
-    const bestChoice = c1 >= cN && c1 >= c2 ? "1" : c2 >= cN && c2 >= c1 ? "2" : "N";
-    const bestCount = Math.max(c1, cN, c2);
-
-    const played = isPlayed(f);
-    if (!played) {
-        const lbl = bestChoice === "1" ? shortName(f.home_name) : bestChoice === "2" ? shortName(f.away_name) : "Nul";
-        verdict.innerHTML = `<span class="verdict-chip verdict-chip--pending">Public : ${escapeHTML(lbl)} (${bestCount} voix)</span>`;
-        return;
-    }
-
-    const actual = f.home_score > f.away_score ? "1" : f.home_score < f.away_score ? "2" : "N";
-    const ok = bestChoice === actual;
-    const lbl = bestChoice === "1" ? shortName(f.home_name) : bestChoice === "2" ? shortName(f.away_name) : "Nul";
-    verdict.innerHTML = `<span class="verdict-chip ${ok ? "verdict-chip--good" : "verdict-chip--bad"}">${ok ? "✔" : "✘"} ${escapeHTML(lbl)} ${ok ? "majorité juste" : "majorité fausse"}</span>`;
 }
 
 function shortName(name) {
@@ -282,45 +248,41 @@ function escapeHTML(s) {
 function escapeAttr(s) { return escapeHTML(s); }
 
 /* --- Stats des votes en barres --- */
-function renderVoteStats(fixtureCard, votesForFixture, myPred) {
+function renderVoteStats(fixtureCard, votesForFixture) {
     const statsEl = fixtureCard.querySelector("[data-stats]");
-    const countEl = fixtureCard.querySelector("[data-count]");
+    if (!statsEl) return;
     const total = votesForFixture.length;
-    if (total === 0) {
-        statsEl.classList.remove("visible");
-        countEl.textContent = "";
-        return;
-    }
+    if (total === 0) { statsEl.innerHTML = ''; return; }
 
-    // Répartition des choix 1 / N / 2
     const c1 = votesForFixture.filter(v => v.choice === "1").length;
     const cN = votesForFixture.filter(v => v.choice === "N").length;
     const c2 = votesForFixture.filter(v => v.choice === "2").length;
-    const pHome = Math.round((c1 / total) * 100);
-    const pDraw = Math.round((cN / total) * 100);
-    const pAway = 100 - pHome - pDraw;
-
-    // Choix le plus voté (mode)
-    const counts = { "1": c1, "N": cN, "2": c2 };
-    let topChoice = "1", topN = -1;
-    Object.keys(counts).forEach(k => { if (counts[k] > topN) { topN = counts[k]; topChoice = k; } });
-    const homeName = escapeHTML(shortName(votesForFixture[0].home_name || ""));
-    const awayName = escapeHTML(shortName(votesForFixture[0].away_name || ""));
-    const topLabel = topChoice === "1" ? homeName : topChoice === "2" ? awayName : "Nul";
+    const p1 = Math.round(c1 / total * 100);
+    const pN = Math.round(cN / total * 100);
+    const p2 = 100 - p1 - pN;
+    const best = Math.max(p1, pN, p2);
 
     statsEl.innerHTML = `
-        <div class="vote-stat-row"><span>${homeName}</span>
-            <div class="vote-stat-bar"><div class="vote-stat-fill vote-stat-fill--home" style="width:${pHome}%"></div></div>
-            <span class="vote-stat-pct">${pHome}%</span></div>
-        <div class="vote-stat-row"><span>Nul</span>
-            <div class="vote-stat-bar"><div class="vote-stat-fill vote-stat-fill--draw" style="width:${pDraw}%"></div></div>
-            <span class="vote-stat-pct">${pDraw}%</span></div>
-        <div class="vote-stat-row"><span>Ext.</span>
-            <div class="vote-stat-bar"><div class="vote-stat-fill vote-stat-fill--away" style="width:${pAway}%"></div></div>
-            <span class="vote-stat-pct">${pAway}%</span></div>
-    `;
-    statsEl.classList.add("visible");
-    countEl.textContent = total + (total > 1 ? " votes" : " vote") + " · " + topLabel + " le + voté";
+        <div class="pred-pct-row">
+            <div class="pred-pct-col ${best === p1 ? 'is-best' : ''}">
+                <span class="pred-pct-val">${p1}%</span>
+                <span class="pred-pct-label">1</span>
+                <div class="pred-pct-bar" style="height:${Math.max(6, p1)}%"></div>
+            </div>
+            <div class="pred-pct-col ${best === pN ? 'is-best' : ''}">
+                <span class="pred-pct-val">${pN}%</span>
+                <span class="pred-pct-label">N</span>
+                <div class="pred-pct-bar" style="height:${Math.max(6, pN)}%"></div>
+            </div>
+            <div class="pred-pct-col ${best === p2 ? 'is-best' : ''}">
+                <span class="pred-pct-val">${p2}%</span>
+                <span class="pred-pct-label">2</span>
+                <div class="pred-pct-bar" style="height:${Math.max(6, p2)}%"></div>
+            </div>
+        </div>
+        <div class="pred-pct-summary">
+            <span>${total} votant${total > 1 ? 's' : ''}</span>
+        </div>`;
 }
 
 /* --- Effet 3D tilt --- */
@@ -445,26 +407,59 @@ async function init() {
             cardsGrid.appendChild(card);
 
             const votesForFixture = votes.filter(v => v.fixture_id === f.id);
-            renderVoteStats(card, votesForFixture, myPreds[f.id] || null);
-            computeVerdict(card, f, votesForFixture);
+            const myPred = myPreds[f.id] || null;
+            const played = isPlayed(f);
+            const myChoice = myPred ? myPred.choice : null;
+            const actualChoice = played ? (f.home_score > f.away_score ? "1" : f.home_score < f.away_score ? "2" : "N") : null;
+            const gotIt = played && myChoice != null && myChoice === actualChoice;
 
-            // Mon choix déjà enregistré → surligner le bouton + afficher succès/échec
-            const myPred = myPreds[f.id];
-            if (myPred) {
-                const actual = isPlayed(f) ? (f.home_score > f.away_score ? "1" : f.home_score < f.away_score ? "2" : "N") : null;
-                const got = actual && myPred.choice === actual;
-                const lbl = myPred.choice === "1" ? shortName(f.home_name) : myPred.choice === "2" ? shortName(f.away_name) : "Nul";
-                card.querySelectorAll(".pred-choice-btn").forEach(b => {
-                    if (b.getAttribute("data-choice") === myPred.choice) b.classList.add("is-mychoice");
-                });
-                const zone = card.querySelector(".vote-zone");
-                const line = document.createElement("div");
-                line.className = "pred-myline";
-                line.innerHTML = `Mon choix : <b>${escapeHTML(lbl)}</b>${isPlayed(f) ? (got ? ` <span class="pred-verdict-badge good"><span class="pred-verdict-symbol">✔</span> Succès</span>` : ` <span class="pred-verdict-badge bad"><span class="pred-verdict-symbol">✘</span> Échec</span>`) : ""}`;
-                if (zone) zone.appendChild(line);
-                if (isPlayed(f)) card.querySelectorAll("[data-save-pred]").forEach(b => b.remove());
+            // 1. Mon choix + verdict
+            const myVerdictEl = card.querySelector("[data-myverdict]");
+            if (myVerdictEl) {
+                const myChoiceVal = myVerdictEl.querySelector(".pred-mychoice-val");
+                const myChoiceText = myChoice != null ? (myChoice === "1" ? "1" : myChoice === "2" ? "2" : "N") : "–";
+                if (myChoiceVal) myChoiceVal.textContent = myChoiceText;
+
+                let verdictHTML = '';
+                if (!played) {
+                    verdictHTML = myChoice != null
+                        ? `<span class="pred-status-text">⏳ En attente</span>`
+                        : `<span class="pred-status-text pred-status-text--muted">Non pronostiqué</span>`;
+                } else if (myChoice != null) {
+                    verdictHTML = gotIt
+                        ? `<span class="pred-verdict-badge good"><span class="pred-verdict-symbol">✔</span> Succès</span>`
+                        : `<span class="pred-verdict-badge bad"><span class="pred-verdict-symbol">✘</span> Échec</span>`;
+                } else {
+                    verdictHTML = `<span class="pred-status-text pred-status-text--muted">Non pronostiqué</span>`;
+                }
+                myVerdictEl.querySelectorAll('.pred-status-text, .pred-verdict-badge').forEach(e => e.remove());
+                myVerdictEl.insertAdjacentHTML('beforeend', verdictHTML);
             }
 
+            // 2. Boutons 1/N/2 — surligner mon choix, griser si match joué
+            const choicesEl = card.querySelector("[data-choices]");
+            if (choicesEl) {
+                choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
+                    const c = b.getAttribute("data-choice");
+                    if (c === myChoice) b.classList.add("is-mychoice");
+                    if (played) {
+                        b.classList.add("is-dim");
+                        b.disabled = true;
+                        if (c !== myChoice) b.style.display = "none";
+                    }
+                });
+                if (played && myChoice == null) {
+                    choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
+                        b.classList.add("is-dim");
+                        b.disabled = true;
+                    });
+                }
+            }
+
+            // 3. Stats communauté
+            renderVoteStats(card, votesForFixture);
+
+            // 4. Vote → Supabase
             card.querySelectorAll("[data-save-pred]").forEach(saveBtn => {
                 saveBtn.addEventListener("click", async () => {
                     const choice = saveBtn.getAttribute("data-choice");
