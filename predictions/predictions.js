@@ -490,20 +490,6 @@ async function init() {
     const activeDay = activeDayParam ? Number(activeDayParam) : null;
     const selectedDay = activeDay && sortedDays.includes(activeDay) ? activeDay : sortedDays[0];
 
-    sortedDays.forEach(day => {
-        const chip = document.createElement("button");
-        chip.className = "day-chip" + (selectedDay === day ? " active" : "");
-        chip.textContent = "J" + day;
-        chip.title = "Journée " + day;
-        chip.dataset.day = day;
-        chip.addEventListener("click", () => {
-            chipsContainer.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
-            chip.classList.add("active");
-            paintDay(day);
-        });
-        chipsContainer.appendChild(chip);
-    });
-
     paintDay(selectedDay);
 }
 
