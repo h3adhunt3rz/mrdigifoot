@@ -170,8 +170,8 @@ function buildCard(f) {
         f.home_score !== null && f.home_score !== undefined &&
         f.away_score !== null && f.away_score !== undefined;
 
-    const scoreL = played ? String(f.home_score) : "–";
-    const scoreR = played ? String(f.away_score) : "–";
+    const scoreL = played ? String(f.home_score) : '';
+    const scoreR = played ? String(f.away_score) : '';
 
     const roundText = f.round_label || (f.matchday ? "J" + f.matchday : "");
     const seasonParts = f.season ? f.season.split("-") : [];
@@ -195,9 +195,7 @@ function buildCard(f) {
           </div>
           <div class="fx-scoreboard">
             <div class="fx-score-nums">
-              <span class="fx-score-n ${played ? "" : "vs-unplayed"}">${scoreL}</span>
-              <span class="fx-score-sep">:</span>
-              <span class="fx-score-n ${played ? "" : "vs-unplayed"}">${scoreR}</span>
+              ${played ? `<span class="fx-score-n">${scoreL}</span><span class="fx-score-sep">:</span><span class="fx-score-n">${scoreR}</span>` : `<span class="fx-score-n vs-unplayed" style="color:#fff;font-size:3.8rem;">VS</span>`}
             </div>
           </div>
           <div class="fx-team away ${played ? (f.away_score > f.home_score ? "result-win" : (f.away_score < f.home_score ? "result-loss" : "")) : ""}">
@@ -424,7 +422,7 @@ async function init() {
                 if (!played) {
                     verdictHTML = myChoice != null
                         ? `<span class="pred-status-text">⏳ En attente</span>`
-                        : `<span class="pred-status-text pred-status-text--muted">Non pronostiqué</span>`;
+                        : `<span class="pred-status-text">⏳ En attente</span>`;
                 } else if (myChoice != null) {
                     verdictHTML = gotIt
                         ? `<span class="pred-verdict-badge good"><span class="pred-verdict-symbol">✔</span> Succès</span>`
