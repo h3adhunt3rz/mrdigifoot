@@ -187,8 +187,6 @@ body:has(a:hover) #cursor::after {
     display: flex;
     align-items: center;
     gap: 8px;
-    flex: 1;
-    justify-content: center;
     flex-wrap: nowrap;
 }
 .site-nav-link {
