@@ -359,21 +359,21 @@ function enhanceCards3D(root) {
 
 /* --- Initialisation --- */
 async function init() {
-    const grid = document.getElementById("card-grid");
-    const badge = document.getElementById("season-badge");
+    const appContainer = document.getElementById("predictions-app") || document.getElementById("card-grid");
+    if (!appContainer) return;
 
     let data;
     try {
         const res = await fetch("fixtures.json");
         data = await res.json();
     } catch (e) {
-        grid.innerHTML = `<div class="empty-state">Impossible de charger les matchs.</div>`;
+        appContainer.innerHTML = `<div class="empty-state">Impossible de charger les matchs.</div>`;
         console.error(e);
         return;
     }
 
     const fixtures = data.fixtures || [];
-    grid.innerHTML = "";
+    appContainer.innerHTML = "";
 
     // Sélection éditoriale curée depuis la webapp (curation → push git)
     let selection = null;
@@ -389,13 +389,14 @@ async function init() {
     if (selection) {
         const ids = new Set(selection.match_ids.map(String));
         displayFixtures = fixtures.filter(f => ids.has(String(f.id)));
+    } else {
+        displayFixtures = fixtures;
     }
 
     if (displayFixtures.length === 0) {
-        grid.innerHTML = `<div class="empty-state">${selection ? "Aucun match sélectionné cette semaine." : "Aucune sélection publiée pour le moment."}</div>`;
+        appContainer.innerHTML = `<div class="empty-state">${selection ? "Aucun match sélectionné cette semaine." : "Aucune sélection publiée pour le moment."}</div>`;
         return;
     }
-    if (badge) badge.textContent = "Saison " + data.season;
 
     // Votes existants
     let votes = [];
@@ -419,27 +420,31 @@ async function init() {
     // Barre de navigation des journées
     const bar = document.createElement("div");
     bar.className = "day-bar";
-    grid.appendChild(bar);
 
-    const content = document.createElement("div");
-    content.className = "card-grid";
-    grid.appendChild(content);
+    const label = document.createElement("div");
+    label.className = "bar-label";
+    const seasonShort = data.season ? data.season.replace("-", "/") : "";
+    label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
+    bar.appendChild(label);
+
+    const chipsContainer = document.createElement("div");
+    chipsContainer.className = "day-chips-container";
+    bar.appendChild(chipsContainer);
+
+    appContainer.appendChild(bar);
+
+    // Grille 3 colonnes principale pour les cartes
+    const cardsGrid = document.createElement("div");
+    cardsGrid.className = "card-grid";
+    appContainer.appendChild(cardsGrid);
 
     const paintDay = (day) => {
-        content.innerHTML = "";
-        const dayFixtures = byDay.get(day);
-
-        const section = document.createElement("div");
-        section.className = "day-section";
-        content.appendChild(section);
-
-        const inner = document.createElement("div");
-        inner.className = "card-grid day-grid";
-        section.appendChild(inner);
+        cardsGrid.innerHTML = "";
+        const dayFixtures = byDay.get(day) || [];
 
         dayFixtures.forEach(f => {
             const card = buildCard(f);
-            inner.appendChild(card);
+            cardsGrid.appendChild(card);
 
             const votesForFixture = votes.filter(v => v.fixture_id === f.id);
             renderVoteStats(card, votesForFixture, myPreds[f.id] || null);
@@ -481,10 +486,12 @@ async function init() {
                 });
             });
         });
+
+        enhanceCards3D(cardsGrid);
     };
 
-    const activeDay = new URLSearchParams(location.search).get("journee") ?
-        Number(new URLSearchParams(location.search).get("journee")) : null;
+    const activeDayParam = new URLSearchParams(location.search).get("journee");
+    const activeDay = activeDayParam ? Number(activeDayParam) : null;
     const selectedDay = activeDay && sortedDays.includes(activeDay) ? activeDay : sortedDays[0];
 
     sortedDays.forEach(day => {
@@ -494,22 +501,14 @@ async function init() {
         chip.title = "Journée " + day;
         chip.dataset.day = day;
         chip.addEventListener("click", () => {
-            bar.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
+            chipsContainer.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
             paintDay(day);
         });
-        bar.appendChild(chip);
+        chipsContainer.appendChild(chip);
     });
 
-    // Label centré : Saison uniquement
-    const label = document.createElement("div");
-    label.className = "bar-label";
-    bar.insertBefore(label, bar.firstChild);
-    const seasonShort = data.season ? data.season.replace("-", "/") : "";
-    label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
-
     paintDay(selectedDay);
-    enhanceCards3D(grid);
 }
 
 document.addEventListener("DOMContentLoaded", init);
