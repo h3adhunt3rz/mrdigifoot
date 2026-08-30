@@ -1043,6 +1043,9 @@ body {
 .pred-status-text--muted { color: var(--text-muted); opacity: 0.7; }
 
 /* Prediction zone — identique webapp */
+.prediction-card .fx-card-inner {
+    justify-content: flex-start;
+}
 .prediction-zone {
     display: flex;
     flex-direction: column;
@@ -1054,24 +1057,26 @@ body {
 }
 .pred-myverdict {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    width: 100%;
+    gap: 6px;
+    flex: 0 0 auto;
 }
 .pred-mychoice {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 10px;
 }
 .pred-mychoice-val {
     font-family: var(--font-brand);
     font-size: 2.2rem;
     line-height: 1;
-    color: var(--gold-soft);
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    background: rgba(192, 157, 60, 0.25);
+    border: 1px solid rgba(192, 157, 60, 0.6);
+    border-radius: 14px;
+    padding: 6px 18px;
+    box-shadow: 0 0 18px rgba(192, 157, 60, 0.3);
 }
 .pred-who {
     font-family: var(--font-display);
@@ -1085,6 +1090,8 @@ body {
     display: flex;
     gap: 8px;
     width: 100%;
+    flex: 0 0 45%;
+    min-height: 140px;
 }
 .pred-stats-slot {
     width: 100%;
