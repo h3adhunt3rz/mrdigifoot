@@ -165,10 +165,37 @@ body:has(a:hover) #cursor::after {
     border: 1px solid rgba(192, 157, 60, 0.45);
 }
 .site-nav-link--cta:hover { box-shadow: 0 0 16px rgba(192, 157, 60, 0.35); }
+.site-nav-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    flex-shrink: 0;
+    padding-right: 8px;
+    border-right: 1px solid rgba(192, 157, 60, 0.25);
+    margin-right: 4px;
+}
+.site-nav-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    object-fit: cover;
+    background: #000;
+}
+.site-nav-title {
+    font-family: 'Bowlby One SC', Impact, sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: #fff;
+    text-transform: uppercase;
+}
 
 @media (max-width: 560px) {
     .site-nav { top: 12px; width: calc(100% - 24px); justify-content: center; }
     .site-nav-link { padding: 8px 12px; font-size: 0.75rem; }
+    .site-nav-title { display: none; }
 }
 
 /* --- HERO SECTION --- */
