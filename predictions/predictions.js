@@ -411,10 +411,10 @@ async function init() {
             if (statusEl) {
                 if (myChoice != null) {
                     statusEl.textContent = 'Pronostiqué';
-                    statusEl.className = 'pred-status';
+                    statusEl.className = 'pred-status pred-status--good';
                 } else if (played) {
                     statusEl.textContent = 'Non pronostiqué';
-                    statusEl.className = 'pred-status pred-status--muted';
+                    statusEl.className = 'pred-status pred-status--bad';
                 } else {
                     statusEl.textContent = '⏳ En attente';
                     statusEl.className = 'pred-status';
