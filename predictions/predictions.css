@@ -656,7 +656,6 @@ body {
     color: var(--gold-soft);
     white-space: nowrap;
 }
-}
 .card-badge-top {
     position: absolute;
     top: 14px;
