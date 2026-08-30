@@ -180,7 +180,7 @@ function buildCard(f) {
             <span class="pred-choice-sub">${escapeHTML(sub)}</span>
         </button>`;
 
-    const pctHTML = (val) => `<span class="pred-choice-pct">${total ? pctMap[val] + '%' : '--%'}</span>`;
+    const pctHTML = (val) => `<span class="pred-choice-pct" data-pct="${val}">--%</span>`;
 
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
@@ -431,9 +431,9 @@ async function init() {
 
             if (choicesEl) {
                 // Pourcentages
-                choicesEl.querySelectorAll(".pred-choice-pct").forEach((pctEl, i) => {
-                    const vals = ["1", "N", "2"];
-                    pctEl.textContent = total ? pctMap[vals[i]] + '%' : '--%';
+                choicesEl.querySelectorAll(".pred-choice-pct").forEach(pctEl => {
+                    const key = pctEl.getAttribute("data-pct");
+                    pctEl.textContent = total ? pctMap[key] + '%' : '--%';
                 });
 
                 // Boutons 1/N/2
