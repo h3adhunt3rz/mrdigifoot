@@ -389,19 +389,6 @@ async function init() {
     if (selection) {
         const ids = new Set(selection.match_ids.map(String));
         displayFixtures = fixtures.filter(f => ids.has(String(f.id)));
-        const banner = document.createElement("div");
-        banner.className = "day-header";
-        banner.style.justifyContent = "center";
-        banner.style.cursor = "default";
-        banner.innerHTML = `<span class="day-header-tag">📋 ${escapeHTML(selection.label || "Matchs de la semaine")}</span>`;
-        grid.appendChild(banner);
-    } else {
-        const note = document.createElement("div");
-        note.className = "day-header";
-        note.style.justifyContent = "center";
-        note.style.cursor = "default";
-        note.innerHTML = `<span class="day-header-tag">📋 Aucune sélection publiée</span>`;
-        grid.appendChild(note);
     }
 
     if (displayFixtures.length === 0) {
@@ -445,11 +432,6 @@ async function init() {
         const section = document.createElement("div");
         section.className = "day-section";
         content.appendChild(section);
-
-        const header = document.createElement("div");
-        header.className = "day-header";
-        header.innerHTML = `<span class="day-header-tag">Journée ${day}</span><span class="day-header-count">${dayFixtures.length} match${dayFixtures.length > 1 ? "s" : ""}</span>`;
-        section.appendChild(header);
 
         const inner = document.createElement("div");
         inner.className = "card-grid day-grid";
@@ -510,13 +492,25 @@ async function init() {
         chip.className = "day-chip" + (selectedDay === day ? " active" : "");
         chip.textContent = "J" + day;
         chip.title = "Journée " + day;
+        chip.dataset.day = day;
         chip.addEventListener("click", () => {
             bar.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
             chip.classList.add("active");
+            updateBarLabel(day);
             paintDay(day);
         });
         bar.appendChild(chip);
     });
+
+    // Label centré : Saison + Journée
+    const label = document.createElement("div");
+    label.className = "bar-label";
+    bar.insertBefore(label, bar.firstChild);
+    const updateBarLabel = (day) => {
+        const seasonShort = data.season ? data.season.replace("-", "/") : "";
+        label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span> <span class="bar-label-sep">·</span> <span class="bar-label-day">Journée ${day}</span>`;
+    };
+    updateBarLabel(selectedDay);
 
     paintDay(selectedDay);
     enhanceCards3D(grid);

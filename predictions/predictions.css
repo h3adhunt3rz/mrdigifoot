@@ -210,59 +210,15 @@ body {
 .page-head {
     width: 100%;
     max-width: 1400px;
-    padding: 84px 24px 16px;
+    padding: 84px 24px 10px;
     text-align: center;
-}
-.backlink {
-    display: inline-block;
-    margin-bottom: 24px;
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    opacity: 0.8;
-}
-.backlink:hover { color: #fff; }
-
-.logo-glow-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-.top-logo {
-    height: 84px;
-    border-radius: 18px;
-    box-shadow: 0 0 40px rgba(192, 157, 60, 0.35);
-}
-.page-title {
-    font-family: var(--font-brand);
-    font-weight: 400;
-    font-size: clamp(1.8rem, 4vw, 3rem);
-    letter-spacing: 0.04em;
-    color: var(--primary-light);
-    text-transform: uppercase;
-    margin-bottom: 14px;
 }
 .page-sub {
     max-width: 720px;
-    margin: 0 auto 20px;
+    margin: 0 auto;
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.6;
-}
-.season-badge {
-    display: inline-block;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 0.85rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--primary-light);
-    padding: 8px 16px;
-    border-radius: 999px;
-    background: rgba(192, 157, 60, 0.12);
-    border: 1px solid var(--card-border);
 }
 
 /* --- GRILLE & CARTES --- */
@@ -466,13 +422,40 @@ body {
     grid-column: 1 / -1;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
     gap: 8px;
     margin-bottom: 26px;
-    padding: 12px;
+    padding: 12px 16px;
     background: rgba(13, 6, 7, 0.5);
     border: 1px solid rgba(192, 157, 60, 0.2);
     border-radius: 16px;
+}
+.bar-label {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 4px;
+    font-family: var(--font-brand);
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+}
+.bar-label-season {
+    display: inline-block;
+    color: var(--primary-light);
+    background: rgba(192, 157, 60, 0.15);
+    border: 1px solid rgba(192, 157, 60, 0.35);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.85rem;
+}
+.bar-label-sep {
+    color: var(--text-muted);
+    margin: 0 6px;
+}
+.bar-label-day {
+    color: var(--primary-light);
+    font-size: 0.95rem;
 }
 .day-chip {
     padding: 8px 14px;
