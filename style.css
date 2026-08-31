@@ -473,7 +473,7 @@ h1 {
 
 .tile-header-overlay {
     position: absolute;
-    top: 60px;
+    top: 110px;
     left: 20px;
     z-index: 10;
     display: flex;
@@ -657,7 +657,7 @@ h1 {
         border-radius: 50%;
     }
     .tile-header-overlay {
-        top: 45px;
+        top: 70px;
         left: 14px;
         gap: 10px;
         width: calc(100% - 28px);
