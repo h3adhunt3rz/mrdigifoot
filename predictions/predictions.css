@@ -1229,7 +1229,7 @@ body {
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .page-head {
         padding: 72px 16px 14px;
     }
@@ -1248,7 +1248,7 @@ body {
         gap: 8px;
     }
     .day-bar .bar-label {
-        margin-left: 0;
+        margin-left: 0 !important;
         width: 100%;
         order: 1;
         text-align: center;
