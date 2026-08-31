@@ -450,6 +450,11 @@ async function init() {
     label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
     bar.appendChild(label);
 
+    // Chips des journées (J2, J3, ...) — cliquables pour naviguer
+    const chipsWrap = document.createElement("div");
+    chipsWrap.className = "day-chips-container";
+    bar.appendChild(chipsWrap);
+
     // Mode test (visible uniquement via ?test=1) : bouton pour effacer ses votes
     const isTestMode = new URLSearchParams(location.search).get("test") === "1";
     if (isTestMode) {
@@ -602,7 +607,26 @@ async function init() {
 
     const activeDayParam = new URLSearchParams(location.search).get("journee");
     const activeDay = activeDayParam ? Number(activeDayParam) : null;
-    const selectedDay = activeDay && sortedDays.includes(activeDay) ? activeDay : sortedDays[0];
+    let selectedDay = activeDay && sortedDays.includes(activeDay) ? activeDay : sortedDays[0];
+
+    // Rendu des chips de journées (navigation)
+    const paintChips = () => {
+        chipsWrap.innerHTML = "";
+        sortedDays.forEach(d => {
+            const chip = document.createElement("button");
+            chip.className = "day-chip" + (d === selectedDay ? " active" : "");
+            chip.textContent = "J" + d;
+            chip.title = "Journée " + d;
+            chip.addEventListener("click", () => {
+                bar.querySelectorAll(".day-chip").forEach(c => c.classList.remove("active"));
+                chip.classList.add("active");
+                selectedDay = d;
+                paintDay(selectedDay);
+            });
+            chipsWrap.appendChild(chip);
+        });
+    };
+    paintChips();
 
     paintDay(selectedDay);
 }
