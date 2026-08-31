@@ -11,3 +11,6 @@ window.MRDIGIFOOT_SUPABASE = {
   url: "https://ijvsnxpzvxithsyqoluw.supabase.co",
   anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqdnNueHB6dnhpdGhzeXFvbHV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTA1OTksImV4cCI6MjEwMzA2NjU5OX0.DvYijydndGIy8qWT1dnGK8aVYkYHIjVyCWMTKvPq_0M"
 };
+
+/* Clé publique Cloudflare Turnstile (captcha invisible anti-bot) */
+window.TURNSTILE_SITE_KEY = "0x4AAAAAAEi0sOaBYZIsnA4o";

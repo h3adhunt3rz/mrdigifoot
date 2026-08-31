@@ -61,6 +61,21 @@
     <div class="toast" id="toast"></div>
 
     <script src="../supabase-config.js"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
+    <script>
+      /* Initialise le widget Turnstile invisible (anti-bot) */
+      window.turnstileWidgetId = null;
+      function onTurnstileLoad() {
+        if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) return;
+        try {
+          window.turnstileWidgetId = window.turnstile.render(document.createElement("div"), {
+            sitekey: window.TURNSTILE_SITE_KEY,
+            size: "invisible",
+            "expired-callback": function () { window.turnstile && window.turnstile.reset(window.turnstileWidgetId); }
+          });
+        } catch (e) { console.error("Turnstile init failed", e); }
+      }
+    </script>
     <script src="predictions.js"></script>
 </body>
 </html>

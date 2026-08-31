@@ -136,9 +136,34 @@ async function fetchVotes() {
     return res.json();
 }
 
-/* --- Supabase : enregistrement / mise à jour d'un vote (choix 1 / N / 2) --- */
+/* --- Endpoint sécurisé : vérification Turnstile + 1 vote par IP --- */
+const VOTE_ENDPOINT = `${SUPABASE_URL}/functions/v1/smart-handler`;
+
+/* Obtient un token Turnstile (captcha invisible) si le widget est chargé */
+function getTurnstileToken() {
+    return new Promise((resolve, reject) => {
+        if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) {
+            // Pas de captcha configuré → on laisse passer (mode dégradé) ?
+            // Non : on refuse, la sécurité doit être active.
+            reject(new Error("captcha non configuré"));
+            return;
+        }
+        window.turnstile.reset(window.turnstileWidgetId);
+        window.turnstile.execute(window.turnstileWidgetId, {
+            callback: (token) => resolve(token),
+            "error-callback": () => reject(new Error("captcha error")),
+            "expired-callback": () => reject(new Error("captcha expiré")),
+        });
+    });
+}
+
+/* --- Supabase : enregistrement d'un vote sécurisé (1/N/2) ---
+   Passe par la Edge Function 'smart-handler' qui :
+     1. vérifie le captcha Turnstile (anti-bot),
+     2. limite à 1 vote par IP par match. */
 async function saveVote(f, choice) {
     const vid = getVisitorId();
+    const token = await getTurnstileToken();
     const body = {
         fixture_id: f.id,
         home_team_id: f.home_team_id,
@@ -149,19 +174,27 @@ async function saveVote(f, choice) {
         season: f.season,
         fixture_date: f.date,
         choice: choice,
-        visitor_id: vid
+        visitor_id: vid,
+        turnstile_token: token
     };
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?on_conflict=fixture_id,visitor_id`, {
+    const res = await fetch(VOTE_ENDPOINT, {
         method: "POST",
         headers: {
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": "Bearer " + SUPABASE_ANON_KEY,
             "Content-Type": "application/json",
-            "Prefer": "resolution=merge-duplicates,return=minimal"
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": "Bearer " + SUPABASE_ANON_KEY
         },
         body: JSON.stringify(body)
     });
-    if (!res.ok) throw new Error("save vote failed: " + res.status);
+    if (!res.ok) {
+        let err = new Error("save vote failed: " + res.status);
+        try {
+            const data = await res.json();
+            err = new Error(data.error || data.message || ("save vote failed: " + res.status));
+            err.code = data.error;
+        } catch (e) { /* ignore */ }
+        throw err;
+    }
 }
 
 /* --- Rendu d'une carte match avec zone de vote --- */
@@ -454,7 +487,7 @@ async function init() {
                 });
             }
 
-            // 3. Vote → Supabase
+            // 3. Vote → Edge Function sécurisée
             card.querySelectorAll("[data-save-pred]").forEach(saveBtn => {
                 saveBtn.addEventListener("click", async () => {
                     const choice = saveBtn.getAttribute("data-choice");
@@ -469,7 +502,11 @@ async function init() {
                     } catch (err) {
                         console.error(err);
                         saveBtn.disabled = false;
-                        toast("Erreur lors de l'envoi, réessaie.");
+                        if (err.code === "already_voted") {
+                            toast("Tu as déjà voté pour ce match (1 vote par IP).");
+                        } else {
+                            toast("Erreur lors de l'envoi, réessaie.");
+                        }
                     }
                 });
             });
