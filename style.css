@@ -444,7 +444,7 @@ h1 {
 .tile-banner {
     width: 100%;
     aspect-ratio: 3 / 1;
-    overflow: visible;
+    overflow: hidden;
     position: relative;
     background: #000;
     border-radius: 40px 40px 0 0; /* On arrondit le haut de la bannière ici */
@@ -456,7 +456,6 @@ h1 {
     object-fit: contain;
     transition: all 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
     filter: brightness(0.8);
-    border-radius: 40px 40px 0 0;
 }
 
 .tile-banner::after {
@@ -465,7 +464,6 @@ h1 {
     inset: 0;
     background: linear-gradient(to top, rgba(36,12,16,1), transparent 50%);
     pointer-events: none;
-    border-radius: 40px 40px 0 0;
 }
 
 .tile:hover .tile-banner img { 
