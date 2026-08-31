@@ -754,13 +754,15 @@ body {
     word-break: break-word;
 }
 
-/* Carte prédiction : centrage vertical stable même si un nom d'équipe prend 2 lignes */
+/* Carte prédiction : VS aligné au niveau du bas des logos pour libérer de l'espace aux noms */
 .prediction-card .fx-arena {
-    align-items: center;
+    align-items: flex-start;
     min-height: 96px;
 }
 .prediction-card .fx-scoreboard {
-    align-self: center;
+    align-self: flex-start;
+    margin-top: 4cqw;
+    min-width: 0;
 }
 .prediction-card .fx-team-name {
     min-height: calc(2 * 1.2em);
@@ -787,7 +789,7 @@ body {
 }
 /* Carte prédiction : hauteur scoreboard proportionnelle */
 .prediction-card .fx-score-nums {
-    height: 14cqw;
+    height: 10cqw;
 }
 .fx-score-n {
     font-size: 3rem;
@@ -812,14 +814,14 @@ body {
 }
 /* Carte prédiction : scoreboard proportionnel à la carte */
 .prediction-card .fx-score-n {
-    font-size: 9cqw;
+    font-size: 8cqw;
     line-height: 1;
 }
 .prediction-card .fx-score-n.vs-unplayed {
-    font-size: 5.5cqw;
+    font-size: 4cqw;
 }
 .prediction-card .fx-score-sep {
-    font-size: 6cqw;
+    font-size: 5cqw;
     line-height: 1;
 }
 .fx-meta-line {
