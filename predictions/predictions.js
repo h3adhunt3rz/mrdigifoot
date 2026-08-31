@@ -486,11 +486,17 @@ async function init() {
             const pctMap = { "1": p1, "N": pN, "2": p2 };
 
             if (choicesEl) {
-                // Pourcentages
+                // Pourcentages : visibles seulement si on a voté (ou match joué)
+                const showPct = myChoice != null || played;
                 choicesEl.querySelectorAll(".pred-choice-pct").forEach(pctEl => {
                     const key = pctEl.getAttribute("data-pct");
                     pctEl.textContent = total ? pctMap[key] + '%' : '--%';
+                    pctEl.style.display = showPct ? '' : 'none';
                 });
+
+                // Légende « répartition » : masquée tant qu'on n'a pas voté
+                const captionEl = card.querySelector("[data-caption]");
+                if (captionEl) captionEl.style.display = showPct ? '' : 'none';
 
                 // Boutons 1/N/2
                 choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
