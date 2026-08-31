@@ -758,6 +758,7 @@ body {
 .prediction-card .fx-arena {
     align-items: flex-start;
     min-height: 96px;
+    padding-top: 40px;
 }
 .prediction-card .fx-scoreboard {
     align-self: flex-start;
@@ -818,7 +819,7 @@ body {
     line-height: 1;
 }
 .prediction-card .fx-score-n.vs-unplayed {
-    font-size: 3.2cqw;
+    font-size: 2.4cqw;
 }
 .prediction-card .fx-score-sep {
     font-size: 5cqw;
