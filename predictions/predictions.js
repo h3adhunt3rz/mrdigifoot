@@ -520,6 +520,8 @@ async function init() {
                         saveBtn.disabled = false;
                         if (err.code === "already_voted") {
                             toast("Tu as déjà voté pour ce match (1 vote par IP).");
+                        } else if (err.code === "Vérification anti-robot échouée") {
+                            toast("Vérification anti-robot, réessaie.");
                         } else {
                             toast("Erreur lors de l'envoi, réessaie.");
                         }
