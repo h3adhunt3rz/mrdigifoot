@@ -79,17 +79,25 @@ function getClubMeta(teamId) {
 
 function logoHTML(teamId, size = 80) {
     const meta = getClubMeta(teamId);
-    const boxStyle = `width:${size}px;height:${size}px;min-width:${size}px;min-height:${size}px;max-width:${size}px;max-height:${size}px;background-color:${meta.color};border-radius:14px;box-sizing:border-box;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 2px #fff,0 0 0 5px rgba(192,157,60,0.55),0 6px 16px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:4px;`;
+    const boxStyle = size > 0
+        ? `width:${size}px;height:${size}px;min-width:${size}px;min-height:${size}px;max-width:${size}px;max-height:${size}px;background-color:${meta.color};border-radius:14px;box-sizing:border-box;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 2px #fff,0 0 0 5px rgba(192,157,60,0.55),0 6px 16px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:4px;`
+        : `background-color:${meta.color};border-radius:14px;box-sizing:border-box;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 2px #fff,0 0 0 5px rgba(192,157,60,0.55),0 6px 16px rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:4px;`;
     if (meta.logo) {
         return `<div class="club-logo-box" style="${boxStyle}"><img class="club-logo-img" src="../img/LOGOS/${meta.logo}" alt="${meta.abbr}"></div>`;
     }
-    const ballSize = Math.max(12, Math.round(size * 0.4));
-    const abbrSize = Math.max(12, Math.round(size * 0.34));
+    const ballSize = size > 0 ? Math.max(12, Math.round(size * 0.4)) : 0;
+    const abbrSize = size > 0 ? Math.max(12, Math.round(size * 0.34)) : 0;
     const isLight = ["#ffffff", "#fde100", "#fdb913", "#95bfe5", "#6cabdd", "#ffd700"].includes(meta.color.toLowerCase());
     const textColor = isLight ? "#111" : "#fff";
-    return `<div class="club-logo-box" style="${boxStyle}color:${textColor};flex-direction:column;gap:2px;">
+    if (size > 0) {
+        return `<div class="club-logo-box" style="${boxStyle}color:${textColor};flex-direction:column;gap:2px;">
         <img class="logo-ball" src="../img/ballon.png" style="width:${ballSize}px;height:${ballSize}px;opacity:0.85;" alt="">
         <span class="logo-abbr" style="font-size:${abbrSize}px;color:${textColor};">${meta.abbr}</span>
+    </div>`;
+    }
+    return `<div class="club-logo-box" style="${boxStyle}color:${textColor};flex-direction:column;gap:2px;">
+        <img class="logo-ball" src="../img/ballon.png" style="opacity:0.85;" alt="">
+        <span class="logo-abbr" style="color:${textColor};">${meta.abbr}</span>
     </div>`;
 }
 
@@ -254,7 +262,7 @@ function buildCard(f) {
         <span class="card-badge-top card-badge-top--epl">🦁 EPL ${seasonShort}</span>
         <div class="fx-arena">
           <div class="fx-team home ${played ? (f.home_score > f.away_score ? "result-win" : (f.home_score < f.away_score ? "result-loss" : "")) : ""}">
-            ${logoHTML(f.home_team_id, 56)}
+            ${logoHTML(f.home_team_id, 0)}
             <span class="fx-team-name">${escapeHTML(f.home_name)}</span>
           </div>
           <div class="fx-scoreboard">
@@ -263,7 +271,7 @@ function buildCard(f) {
             </div>
           </div>
           <div class="fx-team away ${played ? (f.away_score > f.home_score ? "result-win" : (f.away_score < f.home_score ? "result-loss" : "")) : ""}">
-            ${logoHTML(f.away_team_id, 56)}
+            ${logoHTML(f.away_team_id, 0)}
             <span class="fx-team-name">${escapeHTML(f.away_name)}</span>
           </div>
         </div>

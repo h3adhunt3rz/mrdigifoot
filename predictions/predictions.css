@@ -528,6 +528,7 @@ body {
 .ratio-4-5-card {
     width: 100%;
     aspect-ratio: 4 / 5;
+    container-type: inline-size;
     background: var(--card-sheen), var(--card-bg);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
@@ -840,6 +841,20 @@ body {
     background: transparent !important;
     display: block;
 }
+/* Carte prédiction : tout en unités fluides (relatives à la largeur de la carte) */
+.prediction-card .club-logo-box {
+    width: 15cqw;
+    height: 15cqw;
+    min-width: 15cqw;
+    min-height: 15cqw;
+}
+.prediction-card .logo-ball {
+    width: 60%;
+    height: 60%;
+}
+.prediction-card .logo-abbr {
+    font-size: 7cqw;
+}
 .logo-ball {
     object-fit: contain;
     border: none !important;
@@ -1027,13 +1042,13 @@ body {
 }
 .pred-choice-val {
     font-family: var(--font-brand);
-    font-size: 4rem;
+    font-size: 17cqw;
     line-height: 1;
     color: var(--gold-soft);
 }
 .pred-choice-sub {
     font-family: var(--font-display);
-    font-size: 0.6rem;
+    font-size: 3.2cqw;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -1069,16 +1084,16 @@ body {
     min-width: 0;
 }
 .pct-num {
-    font-size: 3.6rem;
+    font-size: 15cqw;
     line-height: 1;
 }
 .pct-num.is-locked {
-    font-size: 2.2rem;
+    font-size: 9cqw;
     filter: grayscale(0.5);
     opacity: 0.75;
 }
 .pct-sym {
-    font-size: 1.6rem;
+    font-size: 6cqw;
     font-weight: 700;
     color: var(--text-muted, #9aa0a6);
     margin-top: 0.6em;
