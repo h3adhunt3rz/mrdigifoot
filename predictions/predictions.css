@@ -758,6 +758,9 @@ body {
     min-height: 96px;
     padding-top: 10px;
 }
+.prediction-card .fx-team {
+    gap: 12px;
+}
 .prediction-card .fx-scoreboard {
     align-self: flex-start;
     height: 15cqw;
