@@ -1,6 +1,8 @@
 {
   "season": "2026-2027",
-  "match_ids": [],
-  "label": "Sélection",
-  "updated_at": "2026-08-31T12:11:31"
+  "match_ids": [
+    "fotmob-epl-2026-2027-5795426"
+  ],
+  "label": "Journée 2",
+  "updated_at": "2026-08-31T12:15:49"
 }
