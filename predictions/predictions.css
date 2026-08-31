@@ -713,7 +713,7 @@ body {
     border: none;
     height: 1px;
     background: linear-gradient(90deg, transparent, rgba(192, 157, 60, 0.35), transparent);
-    margin: 12px 0 10px;
+    margin: 8px 0 8px;
 }
 
 /* Arena scoreboard */
@@ -756,7 +756,7 @@ body {
 .prediction-card .fx-arena {
     align-items: flex-start;
     min-height: 96px;
-    padding-top: 30px;
+    padding-top: 8px;
 }
 .prediction-card .fx-team {
     gap: 12px;
