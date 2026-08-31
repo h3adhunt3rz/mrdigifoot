@@ -484,8 +484,8 @@ h1 {
 }
 
 .tile-avatar {
-    width: 90px;
-    height: 90px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     border: 2px solid #fff;
     background: #000;
@@ -499,7 +499,7 @@ h1 {
 
 .tile-title {
     font-family: 'Bowlby One SC', cursive;
-    font-size: clamp(1.1rem, 3vw, 1.4rem);
+    font-size: clamp(0.95rem, 2.4vw, 1.1rem);
     color: #fff;
     text-shadow: 
         2px 0 0 #000, 
@@ -519,7 +519,7 @@ h1 {
 .foot-card .tile-title { color: var(--primary); }
 
 .tile-handle {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #94a3b8;
     font-weight: 600;
 }
@@ -652,18 +652,18 @@ h1 {
     .tile-banner { border-radius: 24px 24px 0 0; }
 
     .tile-avatar {
-        width: 62px;
-        height: 62px;
+        width: 56px;
+        height: 56px;
         border-radius: 50%;
     }
     .tile-header-overlay {
-        top: 70px;
+        top: 80px;
         left: 14px;
         gap: 10px;
         width: calc(100% - 28px);
     }
     .tile-title {
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
     .tile-info {
         padding: 60px 16px 30px;
