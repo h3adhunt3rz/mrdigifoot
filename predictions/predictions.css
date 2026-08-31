@@ -761,7 +761,7 @@ body {
 }
 .prediction-card .fx-scoreboard {
     align-self: flex-start;
-    margin-top: 4cqw;
+    margin-top: 6cqw;
     min-width: 0;
 }
 .prediction-card .fx-team-name {
@@ -818,7 +818,7 @@ body {
     line-height: 1;
 }
 .prediction-card .fx-score-n.vs-unplayed {
-    font-size: 4cqw;
+    font-size: 3.2cqw;
 }
 .prediction-card .fx-score-sep {
     font-size: 5cqw;
@@ -861,17 +861,17 @@ body {
 }
 /* Carte prédiction : tout en unités fluides (relatives à la largeur de la carte) */
 .prediction-card .club-logo-box {
-    width: 10cqw;
-    height: 10cqw;
-    min-width: 10cqw;
-    min-height: 10cqw;
+    width: 13cqw;
+    height: 13cqw;
+    min-width: 13cqw;
+    min-height: 13cqw;
 }
 .prediction-card .logo-ball {
-    width: 50%;
-    height: 50%;
+    width: 52%;
+    height: 52%;
 }
 .prediction-card .logo-abbr {
-    font-size: 3cqw;
+    font-size: 4cqw;
 }
 .logo-ball {
     object-fit: contain;
