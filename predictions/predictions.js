@@ -494,9 +494,18 @@ async function init() {
                     pctEl.style.display = showPct ? '' : 'none';
                 });
 
-                // Légende « répartition » : masquée tant qu'on n'a pas voté
+                // Légende : message « verrouillé » avant vote, répartition après
                 const captionEl = card.querySelector("[data-caption]");
-                if (captionEl) captionEl.style.display = showPct ? '' : 'none';
+                if (captionEl) {
+                    if (showPct) {
+                        captionEl.textContent = '🗳 Répartition des votes de la communauté';
+                        captionEl.classList.remove('is-locked');
+                    } else {
+                        captionEl.textContent = '🔒 Répartition dévoilée après ton vote';
+                        captionEl.classList.add('is-locked');
+                    }
+                    captionEl.style.display = '';
+                }
 
                 // Boutons 1/N/2
                 choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
