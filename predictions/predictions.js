@@ -495,7 +495,7 @@ async function init() {
                 choicesEl.querySelectorAll(".pred-choice-btn").forEach(b => {
                     const c = b.getAttribute("data-choice");
                     if (c === myChoice) b.classList.add("is-mychoice");
-                    if (played) {
+                    if (played || myChoice != null) {
                         b.classList.add("is-dim");
                         b.disabled = true;
                         b.removeAttribute("data-save-pred");
@@ -517,10 +517,16 @@ async function init() {
                         paintDay(day);
                     } catch (err) {
                         console.error(err);
-                        saveBtn.disabled = false;
                         if (err.code === "already_voted") {
+                            // On sait qu'on a déjà voté → on bascule la carte en mode "Pronostiqué"
                             toast("Tu as déjà voté pour ce match (1 vote par IP).");
-                        } else if (err.code === "Vérification anti-robot échouée") {
+                            myPreds[f.id] = { choice };
+                            votes = await fetchVotes();
+                            paintDay(day);
+                            return;
+                        }
+                        saveBtn.disabled = false;
+                        if (err.code === "Vérification anti-robot échouée") {
                             toast("Vérification anti-robot, réessaie.");
                         } else {
                             toast("Erreur lors de l'envoi, réessaie.");
