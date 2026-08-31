@@ -738,7 +738,7 @@ body {
 }
 .fx-team-name {
     font-family: var(--font-brand);
-    font-size: clamp(0.6rem, 1.9vw, 0.9rem);
+    font-size: 4cqw;
     font-weight: 400;
     line-height: 1.2;
     color: var(--text);
@@ -785,6 +785,10 @@ body {
     line-height: 1;
     height: 80px;
 }
+/* Carte prédiction : hauteur scoreboard proportionnelle */
+.prediction-card .fx-score-nums {
+    height: 22cqw;
+}
 .fx-score-n {
     font-size: 3rem;
     font-variant-numeric: tabular-nums;
@@ -805,6 +809,18 @@ body {
     letter-spacing: 0.04em;
     font-family: var(--font-brand);
     line-height: 80px;
+}
+/* Carte prédiction : scoreboard proportionnel à la carte */
+.prediction-card .fx-score-n {
+    font-size: 11cqw;
+    line-height: 1;
+}
+.prediction-card .fx-score-n.vs-unplayed {
+    font-size: 9cqw;
+}
+.prediction-card .fx-score-sep {
+    font-size: 7cqw;
+    line-height: 1;
 }
 .fx-meta-line {
     font-size: 0.72rem;
@@ -843,17 +859,17 @@ body {
 }
 /* Carte prédiction : tout en unités fluides (relatives à la largeur de la carte) */
 .prediction-card .club-logo-box {
-    width: 15cqw;
-    height: 15cqw;
-    min-width: 15cqw;
-    min-height: 15cqw;
+    width: 11cqw;
+    height: 11cqw;
+    min-width: 11cqw;
+    min-height: 11cqw;
 }
 .prediction-card .logo-ball {
-    width: 60%;
-    height: 60%;
+    width: 55%;
+    height: 55%;
 }
 .prediction-card .logo-abbr {
-    font-size: 7cqw;
+    font-size: 4.5cqw;
 }
 .logo-ball {
     object-fit: contain;
@@ -1042,13 +1058,13 @@ body {
 }
 .pred-choice-val {
     font-family: var(--font-brand);
-    font-size: 17cqw;
+    font-size: 11cqw;
     line-height: 1;
     color: var(--gold-soft);
 }
 .pred-choice-sub {
     font-family: var(--font-display);
-    font-size: 3.2cqw;
+    font-size: 2.6cqw;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
@@ -1084,16 +1100,16 @@ body {
     min-width: 0;
 }
 .pct-num {
-    font-size: 15cqw;
+    font-size: 10cqw;
     line-height: 1;
 }
 .pct-num.is-locked {
-    font-size: 9cqw;
+    font-size: 7cqw;
     filter: grayscale(0.5);
     opacity: 0.75;
 }
 .pct-sym {
-    font-size: 6cqw;
+    font-size: 4.2cqw;
     font-weight: 700;
     color: var(--text-muted, #9aa0a6);
     margin-top: 0.6em;
