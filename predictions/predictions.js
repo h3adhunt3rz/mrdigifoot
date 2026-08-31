@@ -232,7 +232,7 @@ function buildCard(f) {
             <span class="pred-choice-sub">${escapeHTML(sub)}</span>
         </button>`;
 
-    const pctHTML = (val) => `<span class="pred-choice-pct" data-pct="${val}">--%</span>`;
+    const pctHTML = (val) => `<span class="pred-choice-pct" data-pct="${val}"><span class="pct-num">--</span><span class="pct-sym">%</span></span>`;
 
     card.innerHTML = `
       <div class="fx-card-inner" data-variant="global">
@@ -261,9 +261,7 @@ function buildCard(f) {
             ${choiceBtnHTML("1", "1", shortName(f.home_name))}
             ${choiceBtnHTML("N", "N", "Nul")}
             ${choiceBtnHTML("2", "2", shortName(f.away_name))}
-          </div>
-          <div class="pred-choice-caption" data-caption>🔒 Répartition dévoilée après ton vote</div>
-          <div class="pred-pcts" data-pcts>
+            <div class="pred-choice-caption" data-caption>🔒 Répartition dévoilée après ton vote</div>
             ${pctHTML("1")}
             ${pctHTML("N")}
             ${pctHTML("2")}
@@ -488,16 +486,20 @@ async function init() {
             const pctMap = { "1": p1, "N": pN, "2": p2 };
 
             if (choicesEl) {
-                // Pourcentages : visibles seulement si on a voté (ou match joué)
+                // Pourcentages : chiffres si voté (ou match joué), sinon cadenas 🔒
                 const showPct = myChoice != null || played;
-                const pctsEl = card.querySelector("[data-pcts]");
-                if (pctsEl) {
-                    pctsEl.querySelectorAll(".pred-choice-pct").forEach(pctEl => {
-                        const key = pctEl.getAttribute("data-pct");
-                        pctEl.textContent = total ? pctMap[key] + '%' : '--%';
-                        pctEl.style.display = showPct ? '' : 'none';
-                    });
-                }
+                choicesEl.querySelectorAll(".pred-choice-pct").forEach(pctEl => {
+                    const key = pctEl.getAttribute("data-pct");
+                    const numEl = pctEl.querySelector(".pct-num");
+                    const symEl = pctEl.querySelector(".pct-sym");
+                    if (showPct) {
+                        if (numEl) { numEl.textContent = total ? pctMap[key] : '--'; numEl.classList.remove('is-locked'); }
+                        if (symEl) symEl.classList.remove('is-locked');
+                    } else {
+                        if (numEl) { numEl.textContent = '🔒'; numEl.classList.add('is-locked'); }
+                        if (symEl) symEl.classList.add('is-locked');
+                    }
+                });
 
                 // Légende : message « verrouillé » avant vote, répartition après
                 const captionEl = card.querySelector("[data-caption]");

@@ -943,31 +943,26 @@ body {
    PRÉDICTION — boutons 1/N/2 + verdict + stats
    ========================================================= */
 .pred-choice-caption {
+    grid-column: 1 / -1;
     font-family: var(--font-display, inherit);
-    font-size: 0.68rem;
+    font-size: 0.7rem;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted, #9aa0a6);
     text-align: center;
-    margin: 2px 0 0;
+    margin: 22px 0 4px;
 }
 .pred-choice-caption.is-locked {
     color: rgba(154, 160, 166, 0.55);
 }
-.pred-pcts {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    width: 100%;
-}
 .pred-choices {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
     gap: 8px;
     width: 100%;
-    flex: 1;
-    min-height: 0;
+    margin-top: 22px;
 }
 .pred-choice-btn {
     width: 100%;
@@ -1001,7 +996,7 @@ body {
 }
 .pred-choice-val {
     font-family: var(--font-brand);
-    font-size: 1.7rem;
+    font-size: 4rem;
     line-height: 1;
     color: var(--gold-soft);
 }
@@ -1033,11 +1028,32 @@ body {
 }
 .pred-choice-pct {
     font-family: var(--font-display);
-    font-size: 2rem;
     font-weight: 800;
     color: #fff;
-    text-align: center;
-    padding: 10px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 4px 0;
+    min-width: 0;
+}
+.pct-num {
+    font-size: 3.6rem;
+    line-height: 1;
+}
+.pct-num.is-locked {
+    font-size: 2.2rem;
+    filter: grayscale(0.5);
+    opacity: 0.75;
+}
+.pct-sym {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text-muted, #9aa0a6);
+    margin-top: 0.6em;
+}
+.pct-sym.is-locked {
+    opacity: 0.6;
 }
 .pred-choice-btn.is-mychoice .pred-choice-pct { color: var(--gold-soft); }
     cursor: default;
@@ -1098,11 +1114,11 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    padding: 12px 8px 6px;
+    gap: 6px;
+    padding: 10px 8px 6px;
     flex: 1;
     min-height: 0;
-    justify-content: flex-end;
+    justify-content: flex-start;
 }
 .pred-status {
     font-family: var(--font-display);
