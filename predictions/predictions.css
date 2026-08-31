@@ -510,6 +510,16 @@ body {
     border-color: var(--primary-light);
     box-shadow: 0 0 14px rgba(192, 157, 60, 0.4);
 }
+.test-clear-btn {
+    margin-left: auto;
+    border-color: rgba(225, 29, 46, 0.4);
+    color: #ff8b96;
+}
+.test-clear-btn:hover {
+    color: #fff;
+    border-color: #ff8b96;
+    background: rgba(225, 29, 46, 0.25);
+}
 
 /* Carte ratio 4:5 */
 .ratio-4-5-card {

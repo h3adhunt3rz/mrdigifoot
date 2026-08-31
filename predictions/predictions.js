@@ -213,6 +213,19 @@ async function saveVote(f, choice) {
     }
 }
 
+/* --- Mode test : supprime les votes du visiteur courant (bouton caché ?test=1) --- */
+async function deleteMyVotes() {
+    const vid = getVisitorId();
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/visitor_predictions?visitor_id=eq.${encodeURIComponent(vid)}`, {
+        method: "DELETE",
+        headers: {
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": "Bearer " + SUPABASE_ANON_KEY
+        }
+    });
+    if (!res.ok && res.status !== 204) throw new Error("delete votes failed: " + res.status);
+}
+
 /* --- Rendu d'une carte match avec zone de vote --- */
 function buildCard(f) {
     const card = document.createElement("div");
@@ -436,6 +449,31 @@ async function init() {
     const seasonShort = data.season ? data.season.replace("-", "/") : "";
     label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
     bar.appendChild(label);
+
+    // Mode test (visible uniquement via ?test=1) : bouton pour effacer ses votes
+    const isTestMode = new URLSearchParams(location.search).get("test") === "1";
+    if (isTestMode) {
+        const testBtn = document.createElement("button");
+        testBtn.className = "day-chip test-clear-btn";
+        testBtn.textContent = "🧹 Effacer mes votes (test)";
+        testBtn.title = "Mode test : supprime tes votes dans Supabase";
+        testBtn.addEventListener("click", async () => {
+            testBtn.disabled = true;
+            try {
+                await deleteMyVotes();
+                toast("Votes effacés ✓");
+                Object.keys(myPreds).forEach(k => delete myPreds[k]);
+                votes = await fetchVotes();
+                paintDay(selectedDay);
+            } catch (err) {
+                console.error(err);
+                toast("Erreur suppression : " + (err.message || ""));
+            } finally {
+                testBtn.disabled = false;
+            }
+        });
+        bar.appendChild(testBtn);
+    }
 
     appContainer.appendChild(bar);
 
