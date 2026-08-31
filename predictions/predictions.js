@@ -139,21 +139,35 @@ async function fetchVotes() {
 /* --- Endpoint sécurisé : vérification Turnstile + 1 vote par IP --- */
 const VOTE_ENDPOINT = `${SUPABASE_URL}/functions/v1/smart-handler`;
 
-/* Obtient un token Turnstile (captcha invisible) si le widget est chargé */
+/* Obtient un token Turnstile (captcha invisible). Attend que le widget soit prêt. */
 function getTurnstileToken() {
     return new Promise((resolve, reject) => {
-        if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) {
-            // Pas de captcha configuré → on laisse passer (mode dégradé) ?
-            // Non : on refuse, la sécurité doit être active.
-            reject(new Error("captcha non configuré"));
-            return;
-        }
-        window.turnstile.reset(window.turnstileWidgetId);
-        window.turnstile.execute(window.turnstileWidgetId, {
-            callback: (token) => resolve(token),
-            "error-callback": () => reject(new Error("captcha error")),
-            "expired-callback": () => reject(new Error("captcha expiré")),
-        });
+        const tryOnce = () => {
+            if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) {
+                reject(new Error("captcha non configuré"));
+                return;
+            }
+            if (window.turnstileWidgetId == null) {
+                // widget pas encore initialisé → on retente brièvement
+                return false;
+            }
+            window.turnstile.reset(window.turnstileWidgetId);
+            window.turnstile.execute(window.turnstileWidgetId, {
+                callback: (token) => resolve(token),
+                "error-callback": () => reject(new Error("captcha error")),
+                "expired-callback": () => reject(new Error("captcha expiré")),
+            });
+            return true;
+        };
+
+        if (tryOnce()) return;
+
+        let tries = 0;
+        const iv = setInterval(() => {
+            tries++;
+            if (tryOnce()) { clearInterval(iv); }
+            else if (tries >= 15) { clearInterval(iv); reject(new Error("captcha non prêt")); }
+        }, 200);
     });
 }
 

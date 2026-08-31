@@ -59,20 +59,27 @@
     </footer>
 
     <div class="toast" id="toast"></div>
+    <div id="turnstile-widget" aria-hidden="true" style="position:absolute;left:-9999px;top:0;width:0;height:0;overflow:hidden;"></div>
 
     <script src="../supabase-config.js"></script>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
     <script>
-      /* Initialise le widget Turnstile invisible (anti-bot) */
+      /* Initialise le widget Turnstile invisible (anti-bot).
+         Le conteneur doit être DANS le DOM (Cloudflare y injecte un iframe). */
       window.turnstileWidgetId = null;
       function onTurnstileLoad() {
         if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) return;
         try {
-          window.turnstileWidgetId = window.turnstile.render(document.createElement("div"), {
+          var container = document.getElementById("turnstile-widget");
+          window.turnstileWidgetId = window.turnstile.render(container, {
             sitekey: window.TURNSTILE_SITE_KEY,
             size: "invisible",
-            "expired-callback": function () { window.turnstile && window.turnstile.reset(window.turnstileWidgetId); }
+            "expired-callback": function () {
+              if (window.turnstile && window.turnstileWidgetId != null)
+                window.turnstile.reset(window.turnstileWidgetId);
+            }
           });
+          console.log("Turnstile prêt, widgetId=", window.turnstileWidgetId);
         } catch (e) { console.error("Turnstile init failed", e); }
       }
     </script>
