@@ -446,28 +446,29 @@ body {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto 28px;
-    padding: 16px 20px;
+    padding: 12px 20px;
     background: rgba(13, 6, 7, 0.75);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(192, 157, 60, 0.25);
     border-radius: 18px;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
+    flex-wrap: wrap;
 }
 .bar-label {
-    width: 100%;
-    text-align: center;
-    margin-bottom: 2px;
+    margin-left: auto;
+    flex-shrink: 0;
     font-family: var(--font-brand);
     font-size: 1rem;
     letter-spacing: 0.04em;
     line-height: 1;
+    white-space: nowrap;
 }
 .bar-label-season {
     display: inline-block;
@@ -487,17 +488,19 @@ body {
     max-width: 100%;
 }
 .day-chip {
-    padding: 8px 16px;
+    flex-shrink: 0;
+    padding: 12px 20px;
     border: 1px solid rgba(192, 157, 60, 0.3);
     background: rgba(0, 0, 0, 0.4);
     color: var(--text-muted);
     border-radius: 999px;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 1.05rem;
     letter-spacing: 0.04em;
     cursor: pointer;
     transition: all 0.2s ease;
+    white-space: nowrap;
 }
 .day-chip:hover {
     color: #fff;
@@ -505,10 +508,10 @@ body {
     background: rgba(192, 157, 60, 0.22);
 }
 .day-chip.active {
-    color: #000;
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
-    border-color: var(--primary-light);
-    box-shadow: 0 0 14px rgba(192, 157, 60, 0.4);
+    color: #fff;
+    background: var(--red);
+    border-color: var(--red);
+    box-shadow: 0 0 14px rgba(225, 29, 46, 0.4);
 }
 .test-clear-btn {
     margin-left: auto;
