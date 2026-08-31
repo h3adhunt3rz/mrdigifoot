@@ -257,11 +257,13 @@ function buildCard(f) {
         <hr class="card-sep" />
         <div class="prediction-zone">
           <div class="pred-status" data-status>⏳ En attente</div>
-          <div class="pred-choice-caption" data-caption>🗳 Répartition des votes de la communauté</div>
           <div class="pred-choices" data-choices>
             ${choiceBtnHTML("1", "1", shortName(f.home_name))}
             ${choiceBtnHTML("N", "N", "Nul")}
             ${choiceBtnHTML("2", "2", shortName(f.away_name))}
+          </div>
+          <div class="pred-choice-caption" data-caption>🔒 Répartition dévoilée après ton vote</div>
+          <div class="pred-pcts" data-pcts>
             ${pctHTML("1")}
             ${pctHTML("N")}
             ${pctHTML("2")}
@@ -488,11 +490,14 @@ async function init() {
             if (choicesEl) {
                 // Pourcentages : visibles seulement si on a voté (ou match joué)
                 const showPct = myChoice != null || played;
-                choicesEl.querySelectorAll(".pred-choice-pct").forEach(pctEl => {
-                    const key = pctEl.getAttribute("data-pct");
-                    pctEl.textContent = total ? pctMap[key] + '%' : '--%';
-                    pctEl.style.display = showPct ? '' : 'none';
-                });
+                const pctsEl = card.querySelector("[data-pcts]");
+                if (pctsEl) {
+                    pctsEl.querySelectorAll(".pred-choice-pct").forEach(pctEl => {
+                        const key = pctEl.getAttribute("data-pct");
+                        pctEl.textContent = total ? pctMap[key] + '%' : '--%';
+                        pctEl.style.display = showPct ? '' : 'none';
+                    });
+                }
 
                 // Légende : message « verrouillé » avant vote, répartition après
                 const captionEl = card.querySelector("[data-caption]");

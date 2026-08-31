@@ -950,15 +950,20 @@ body {
     text-transform: uppercase;
     color: var(--text-muted, #9aa0a6);
     text-align: center;
-    margin-top: -4px;
+    margin: 2px 0 0;
 }
 .pred-choice-caption.is-locked {
     color: rgba(154, 160, 166, 0.55);
 }
+.pred-pcts {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+}
 .pred-choices {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: auto auto;
     gap: 8px;
     width: 100%;
     flex: 1;
