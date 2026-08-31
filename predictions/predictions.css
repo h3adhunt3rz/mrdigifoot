@@ -879,7 +879,7 @@ body {
     opacity: 0.85;
 }
 .logo-abbr {
-    font-family: var(--font-brand);
+    font-family: 'FMUniverse', sans-serif;
     font-size: 26px;
     font-weight: 400;
     line-height: 1;
