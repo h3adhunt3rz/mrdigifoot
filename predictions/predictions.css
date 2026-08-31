@@ -756,7 +756,7 @@ body {
 .prediction-card .fx-arena {
     align-items: flex-start;
     min-height: 96px;
-    padding-top: 40px;
+    padding-top: 10px;
 }
 .prediction-card .fx-scoreboard {
     align-self: flex-start;
