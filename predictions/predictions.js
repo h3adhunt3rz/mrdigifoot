@@ -452,17 +452,17 @@ async function init() {
     const bar = document.createElement("div");
     bar.className = "day-bar";
 
-    // Chips des journées (J2, J3, ...) — cliquables pour naviguer
-    const chipsWrap = document.createElement("div");
-    chipsWrap.className = "day-chips-container";
-    bar.appendChild(chipsWrap);
-
-    // Saison — poussée à droite
+    // Saison — au-dessus des chips
     const label = document.createElement("div");
     label.className = "bar-label";
     const seasonShort = data.season ? data.season.replace("-", "/") : "";
     label.innerHTML = `<span class="bar-label-season">Saison ${escapeHTML(seasonShort)}</span>`;
     bar.appendChild(label);
+
+    // Chips des journées (J2, J3, ...) — cliquables pour naviguer
+    const chipsWrap = document.createElement("div");
+    chipsWrap.className = "day-chips-container";
+    bar.appendChild(chipsWrap);
 
     // Mode test (visible uniquement via ?test=1) : bouton pour effacer ses votes
     const isTestMode = new URLSearchParams(location.search).get("test") === "1";
