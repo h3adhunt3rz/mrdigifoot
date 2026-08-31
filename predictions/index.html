@@ -65,19 +65,25 @@
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad" async defer></script>
     <script>
       /* Initialise le widget Turnstile invisible (anti-bot).
-         Le conteneur doit être DANS le DOM (Cloudflare y injecte un iframe). */
+         Le conteneur doit être DANS le DOM (Cloudflare y injecte un iframe).
+         Mode interaction-only : le token est généré automatiquement et
+         régénéré à l'expiration — aucune exécution manuelle nécessaire. */
       window.turnstileWidgetId = null;
+      window._turnstileToken = null;
       function onTurnstileLoad() {
         if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) return;
         try {
           var container = document.getElementById("turnstile-widget");
           window.turnstileWidgetId = window.turnstile.render(container, {
             sitekey: window.TURNSTILE_SITE_KEY,
-            appearance: "execute",
+            appearance: "interaction-only",
+            callback: function (token) { window._turnstileToken = token; },
             "expired-callback": function () {
+              window._turnstileToken = null;
               if (window.turnstile && window.turnstileWidgetId != null)
                 window.turnstile.reset(window.turnstileWidgetId);
-            }
+            },
+            "error-callback": function () { window._turnstileToken = null; }
           });
           console.log("Turnstile prêt, widgetId=", window.turnstileWidgetId);
         } catch (e) { console.error("Turnstile init failed", e); }

@@ -139,7 +139,9 @@ async function fetchVotes() {
 /* --- Endpoint sécurisé : vérification Turnstile + 1 vote par IP --- */
 const VOTE_ENDPOINT = `${SUPABASE_URL}/functions/v1/smart-handler`;
 
-/* Obtient un token Turnstile (captcha invisible). Attend que le widget soit prêt. */
+/* Obtient un token Turnstile (captcha invisible).
+   Le widget (mode interaction-only) stocke son token automatiquement
+   dans window._turnstileToken. On l'attend s'il n'est pas encore prêt. */
 function getTurnstileToken() {
     return new Promise((resolve, reject) => {
         const tryOnce = () => {
@@ -151,13 +153,13 @@ function getTurnstileToken() {
                 // widget pas encore initialisé → on retente brièvement
                 return false;
             }
-            window.turnstile.reset(window.turnstileWidgetId);
-            window.turnstile.execute(window.turnstileWidgetId, {
-                callback: (token) => resolve(token),
-                "error-callback": () => reject(new Error("captcha error")),
-                "expired-callback": () => reject(new Error("captcha expiré")),
-            });
-            return true;
+            if (window._turnstileToken) {
+                resolve(window._turnstileToken);
+                return true;
+            }
+            // Token pas encore généré : on peut relancer le widget si besoin
+            try { window.turnstile.reset(window.turnstileWidgetId); } catch (e) { /* ignore */ }
+            return false;
         };
 
         if (tryOnce()) return;
@@ -166,8 +168,8 @@ function getTurnstileToken() {
         const iv = setInterval(() => {
             tries++;
             if (tryOnce()) { clearInterval(iv); }
-            else if (tries >= 15) { clearInterval(iv); reject(new Error("captcha non prêt")); }
-        }, 200);
+            else if (tries >= 20) { clearInterval(iv); reject(new Error("captcha non prêt")); }
+        }, 250);
     });
 }
 
