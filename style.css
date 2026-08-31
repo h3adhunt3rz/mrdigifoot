@@ -644,22 +644,45 @@ h1 {
     .hero-title-wrap { flex-direction: column; text-align: center; gap: 20px; }
     .hero-titles { align-items: center; text-align: center; }
     .canvas { grid-template-columns: 1fr; padding-top: 20px; gap: 30px; }
-    
+    .canvas.page-panel { padding: 14px; max-width: 100%; }
+
+    .tile-wrap { max-width: 100%; }
+    .tile { border-radius: 24px; }
+    .tile::before, .tile::after { border-radius: 24px; }
+    .tile-banner { border-radius: 24px 24px 0 0; }
+
     .tile-avatar {
-        width: 70px;
-        height: 70px;
+        width: 62px;
+        height: 62px;
         border-radius: 50%;
     }
     .tile-header-overlay {
-        top: 18%;
-        left: 15px;
+        top: 14%;
+        left: 14px;
+        gap: 10px;
+        width: calc(100% - 28px);
     }
     .tile-title {
-        font-size: 0.95rem; /* Slightly smaller pseudo for better balance */
+        font-size: 0.95rem;
+    }
+    .tile-info {
+        padding: 60px 16px 30px;
     }
     .tile-bio {
-        font-size: 1.1rem; /* Bigger bio text on mobile for emphasis */
+        font-size: 0.98rem;
+        margin-bottom: 20px;
+        min-height: 0;
     }
+    .tile-links {
+        gap: 10px;
+        grid-template-columns: repeat(5, 1fr);
+    }
+    .icon-link {
+        max-width: none;
+        aspect-ratio: 1;
+    }
+    .icon-link img { width: 20px; height: 20px; }
+    .icon-link::before { display: none; }
 }
 
 @media (max-width: 768px) {
