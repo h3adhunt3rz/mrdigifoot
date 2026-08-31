@@ -738,14 +738,14 @@ body {
 }
 .fx-team-name {
     font-family: var(--font-brand);
-    font-size: 4cqw;
+    font-size: 3.4cqw;
     font-weight: 400;
     line-height: 1.2;
     color: var(--text);
     text-transform: uppercase;
     letter-spacing: 0.02em;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     max-width: 100%;
@@ -757,7 +757,7 @@ body {
 /* Carte prédiction : centrage vertical stable même si un nom d'équipe prend 2 lignes */
 .prediction-card .fx-arena {
     align-items: center;
-    min-height: 118px;
+    min-height: 96px;
 }
 .prediction-card .fx-scoreboard {
     align-self: center;
@@ -787,7 +787,7 @@ body {
 }
 /* Carte prédiction : hauteur scoreboard proportionnelle */
 .prediction-card .fx-score-nums {
-    height: 22cqw;
+    height: 14cqw;
 }
 .fx-score-n {
     font-size: 3rem;
@@ -812,14 +812,14 @@ body {
 }
 /* Carte prédiction : scoreboard proportionnel à la carte */
 .prediction-card .fx-score-n {
-    font-size: 11cqw;
+    font-size: 9cqw;
     line-height: 1;
 }
 .prediction-card .fx-score-n.vs-unplayed {
-    font-size: 9cqw;
+    font-size: 5.5cqw;
 }
 .prediction-card .fx-score-sep {
-    font-size: 7cqw;
+    font-size: 6cqw;
     line-height: 1;
 }
 .fx-meta-line {
@@ -859,17 +859,17 @@ body {
 }
 /* Carte prédiction : tout en unités fluides (relatives à la largeur de la carte) */
 .prediction-card .club-logo-box {
-    width: 11cqw;
-    height: 11cqw;
-    min-width: 11cqw;
-    min-height: 11cqw;
+    width: 10cqw;
+    height: 10cqw;
+    min-width: 10cqw;
+    min-height: 10cqw;
 }
 .prediction-card .logo-ball {
-    width: 55%;
-    height: 55%;
+    width: 50%;
+    height: 50%;
 }
 .prediction-card .logo-abbr {
-    font-size: 4.5cqw;
+    font-size: 3cqw;
 }
 .logo-ball {
     object-fit: contain;
@@ -1013,7 +1013,7 @@ body {
     text-transform: uppercase;
     color: var(--text-muted, #9aa0a6);
     text-align: center;
-    margin: 22px 0 4px;
+    margin: 12px 0 4px;
 }
 .pred-choice-caption.is-locked {
     color: rgba(154, 160, 166, 0.55);
@@ -1024,7 +1024,7 @@ body {
     grid-template-rows: auto auto auto;
     gap: 8px;
     width: 100%;
-    margin-top: 22px;
+    margin-top: 14px;
 }
 .pred-choice-btn {
     width: 100%;
@@ -1032,8 +1032,8 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 12px 6px 9px;
+    gap: 2px;
+    padding: 8px 4px 6px;
     border: 1px solid rgba(192, 157, 60, 0.45);
     background: rgba(0, 0, 0, 0.35);
     border-radius: 12px;
@@ -1064,17 +1064,17 @@ body {
 }
 .pred-choice-sub {
     font-family: var(--font-display);
-    font-size: 2.6cqw;
+    font-size: 2.4cqw;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--text-muted);
     line-height: 1.2;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: calc(2 * 1.2em);
+    min-height: 1.2em;
     max-width: 100%;
 }
 .pred-choice-btn.is-dim {
