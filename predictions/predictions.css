@@ -942,6 +942,16 @@ body {
 /* =========================================================
    PRÉDICTION — boutons 1/N/2 + verdict + stats
    ========================================================= */
+.pred-choice-caption {
+    font-family: var(--font-display, inherit);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted, #9aa0a6);
+    text-align: center;
+    margin-top: -4px;
+}
 .pred-choices {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

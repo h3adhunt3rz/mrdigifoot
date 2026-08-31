@@ -257,6 +257,7 @@ function buildCard(f) {
         <hr class="card-sep" />
         <div class="prediction-zone">
           <div class="pred-status" data-status>⏳ En attente</div>
+          <div class="pred-choice-caption" data-caption>🗳 Répartition des votes de la communauté</div>
           <div class="pred-choices" data-choices>
             ${choiceBtnHTML("1", "1", shortName(f.home_name))}
             ${choiceBtnHTML("N", "N", "Nul")}
