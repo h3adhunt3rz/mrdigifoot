@@ -5,8 +5,11 @@
 
 "use strict";
 
-const SUPABASE_URL = "https://ijvsnxpzvxithsyqoluw.supabase.co";
-const SUPABASE_ANON_KEY =
+// Config Supabase centralisée (URL + clé anon, publiques) — chargée par
+// ../supabase-config.js depuis predictions/index.html. Fallback en dur si absent.
+const _supa = (typeof window !== 'undefined' && window.MRDIGIFOOT_SUPABASE) || {};
+const SUPABASE_URL = _supa.url || "https://ijvsnxpzvxithsyqoluw.supabase.co";
+const SUPABASE_ANON_KEY = _supa.anonKey ||
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqdnNueHB6dnhpdGhzeXFvbHV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc0OTA1OTksImV4cCI6MjEwMzA2NjU5OX0.DvYijydndGIy8qWT1dnGK8aVYkYHIjVyCWMTKvPq_0M";
 
 /* --- Couleurs / abréviations des clubs (extrait de CLUB_META) --- */
