@@ -528,7 +528,6 @@ body {
 .ratio-4-5-card {
     width: 100%;
     aspect-ratio: 4 / 5;
-    min-height: 520px;
     background: var(--card-sheen), var(--card-bg);
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
