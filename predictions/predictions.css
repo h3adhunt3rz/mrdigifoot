@@ -459,7 +459,6 @@ body {
     gap: 12px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     box-sizing: border-box;
-    flex-wrap: wrap;
 }
 .bar-label {
     margin-left: auto;
@@ -481,11 +480,20 @@ body {
 }
 .day-chips-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 8px;
     max-width: 100%;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    padding-bottom: 4px;
+}
+.day-chips-container .day-chip {
+    scroll-snap-align: start;
+    flex-shrink: 0;
 }
 .day-chip {
     flex-shrink: 0;
@@ -1236,6 +1244,23 @@ body {
         padding: 12px 14px;
         margin-bottom: 20px;
         border-radius: 14px;
+        flex-wrap: wrap;
+    }
+    .day-bar .bar-label {
+        margin-left: 0;
+        width: 100%;
+        order: 3;
+        text-align: center;
+        margin-top: 6px;
+    }
+    .day-chips-container {
+        flex: 1;
+        min-width: 0;
+        order: 1;
+    }
+    .test-clear-btn {
+        margin-left: auto;
+        order: 2;
     }
     .card-grid {
         grid-template-columns: 1fr;
