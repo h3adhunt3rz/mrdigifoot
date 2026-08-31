@@ -745,10 +745,11 @@ body {
     text-transform: uppercase;
     letter-spacing: 0.02em;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     max-width: 100%;
+    min-height: calc(2 * 1.2em);
 }
 
 /* Carte prédiction : centrage vertical stable même si un nom d'équipe prend 2 lignes */
@@ -1208,5 +1209,13 @@ body {
     }
     .fx-score-n {
         font-size: 2.5rem;
+    }
+    .fx-team-name {
+        font-size: 0.78rem;
+        line-height: 1.15;
+        min-height: calc(2 * 1.15em);
+    }
+    .prediction-card .fx-arena {
+        min-height: 108px;
     }
 }
