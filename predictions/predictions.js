@@ -229,7 +229,7 @@ async function deleteMyVotes() {
 /* --- Rendu d'une carte match avec zone de vote --- */
 function buildCard(f) {
     const card = document.createElement("div");
-    card.className = "ratio-4-5-card";
+    card.className = "ratio-4-5-card prediction-card";
 
     const played = f.status === "Terminé" &&
         f.home_score !== null && f.home_score !== undefined &&
@@ -254,7 +254,7 @@ function buildCard(f) {
         <span class="card-badge-top card-badge-top--epl">🦁 EPL ${seasonShort}</span>
         <div class="fx-arena">
           <div class="fx-team home ${played ? (f.home_score > f.away_score ? "result-win" : (f.home_score < f.away_score ? "result-loss" : "")) : ""}">
-            ${logoHTML(f.home_team_id, 76)}
+            ${logoHTML(f.home_team_id, 56)}
             <span class="fx-team-name">${escapeHTML(f.home_name)}</span>
           </div>
           <div class="fx-scoreboard">
@@ -263,7 +263,7 @@ function buildCard(f) {
             </div>
           </div>
           <div class="fx-team away ${played ? (f.away_score > f.home_score ? "result-win" : (f.away_score < f.home_score ? "result-loss" : "")) : ""}">
-            ${logoHTML(f.away_team_id, 76)}
+            ${logoHTML(f.away_team_id, 56)}
             <span class="fx-team-name">${escapeHTML(f.away_name)}</span>
           </div>
         </div>

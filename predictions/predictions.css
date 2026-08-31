@@ -749,6 +749,17 @@ body {
     -webkit-box-orient: vertical;
     overflow: hidden;
     max-width: 100%;
+}
+
+/* Carte prédiction : centrage vertical stable même si un nom d'équipe prend 2 lignes */
+.prediction-card .fx-arena {
+    align-items: center;
+    min-height: 118px;
+}
+.prediction-card .fx-scoreboard {
+    align-self: center;
+}
+.prediction-card .fx-team-name {
     min-height: calc(2 * 1.2em);
 }
 .fx-scoreboard {
@@ -851,6 +862,10 @@ body {
     align-items: center;
     gap: 10px;
     padding-top: 8px;
+}
+/* Carte prédiction : watermark centré */
+.prediction-card .fx-card-bottom {
+    justify-content: center;
 }
 .canvas-watermark {
     font-family: var(--font-brand);
