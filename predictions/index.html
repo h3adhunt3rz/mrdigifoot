@@ -73,7 +73,7 @@
           var container = document.getElementById("turnstile-widget");
           window.turnstileWidgetId = window.turnstile.render(container, {
             sitekey: window.TURNSTILE_SITE_KEY,
-            size: "invisible",
+            appearance: "execute",
             "expired-callback": function () {
               if (window.turnstile && window.turnstileWidgetId != null)
                 window.turnstile.reset(window.turnstileWidgetId);
