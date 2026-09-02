@@ -653,4 +653,38 @@ async function init() {
     paintDay(selectedDay);
 }
 
-document.addEventListener("DOMContentLoaded", init);
+function initNewsletterForm() {
+    const optinForm = document.getElementById("systeme-optin-form");
+    const thanksBox = document.getElementById("newsletter-thanks");
+    if (!optinForm) return;
+
+    optinForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const submitBtn = optinForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Envoi...";
+        }
+
+        const formData = new FormData(optinForm);
+
+        try {
+            await fetch(optinForm.action, {
+                method: "POST",
+                body: formData,
+                mode: "no-cors"
+            });
+
+            optinForm.style.display = "none";
+            if (thanksBox) thanksBox.style.display = "block";
+        } catch (err) {
+            console.error("Erreur lors de la soumission du formulaire newsletter :", err);
+            optinForm.submit();
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+    initNewsletterForm();
+});

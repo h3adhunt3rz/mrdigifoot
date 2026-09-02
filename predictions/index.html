@@ -56,12 +56,16 @@
             <h3 class="newsletter-title">💌 Reçois les résultats & la newsletter</h3>
             <p class="newsletter-sub">Vérifie tes pronostics, suis l'EPL et reçois du contenu foot chaque semaine.</p>
             <div class="newsletter-form" data-newsletter>
-                <form method="post" action="https://systeme.io/embedded/44083581/subscription">
-                    <input type="text" name="email" />
+                <form id="systeme-optin-form" method="post" action="https://systeme.io/embedded/44083581/subscription">
+                    <input type="email" name="email" placeholder="Ton adresse email" required />
                     <div class="f-row">
-                        <button type="submit" class="btn">Subscribe</button>
+                        <button type="submit" class="btn">S'inscrire</button>
                     </div>
                 </form>
+                <div id="newsletter-thanks" style="display:none; text-align:center; padding:15px; background:rgba(255,255,255,0.06); border-radius:12px; margin-top:12px; border: 1px solid rgba(78, 204, 163, 0.3);">
+                    <p style="font-weight:bold; font-size:1.05rem; color:#4ECCA3; margin:0 0 6px 0;">📧 Inscription presque terminée !</p>
+                    <p style="font-size:0.9rem; color:#e0e0e0; margin:0; line-height:1.4;">Un e-mail de confirmation vient de t'être envoyé. Clique sur le lien dans le message pour valider ton abonnement.</p>
+                </div>
             </div>
         </div>
     </section>
