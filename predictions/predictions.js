@@ -658,29 +658,19 @@ function initNewsletterForm() {
     const thanksBox = document.getElementById("newsletter-thanks");
     if (!optinForm) return;
 
-    optinForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    optinForm.addEventListener("submit", () => {
         const submitBtn = optinForm.querySelector('button[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.textContent = "Envoi...";
         }
 
-        const formData = new FormData(optinForm);
-
-        try {
-            await fetch(optinForm.action, {
-                method: "POST",
-                body: formData,
-                mode: "no-cors"
-            });
-
+        // Le formulaire se soumet réellement dans l'iframe invisible (target="hidden_systeme_iframe").
+        // Systeme.io reçoit le POST exact avec application/x-www-form-urlencoded et enregistre l'email.
+        setTimeout(() => {
             optinForm.style.display = "none";
             if (thanksBox) thanksBox.style.display = "block";
-        } catch (err) {
-            console.error("Erreur lors de la soumission du formulaire newsletter :", err);
-            optinForm.submit();
-        }
+        }, 400);
     });
 }
 
