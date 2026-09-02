@@ -56,29 +56,13 @@
             <h3 class="newsletter-title">💌 Reçois les résultats & la newsletter</h3>
             <p class="newsletter-sub">Vérifie tes pronostics, suis l'EPL et reçois du contenu foot chaque semaine.</p>
             <div class="newsletter-form" data-newsletter>
-                <form method="post" action="https://systeme.io/embedded/44083581/subscription" class="sy-embed-form" target="sy-embed-frame" id="sy-embed-form">
-                    <input type="text" name="email" class="sy-embed-input" placeholder="Ton email" aria-label="Ton email">
-                    <div class="f-row sy-embed-row">
-                        <button type="submit" class="btn sy-embed-btn">Je deviens titulaire !</button>
+                <form method="post" action="https://systeme.io/embedded/44083581/subscription">
+                    <input type="text" name="email" />
+                    <div class="f-row">
+                        <button type="submit" class="btn">Subscribe</button>
                     </div>
                 </form>
-                <iframe name="sy-embed-frame" id="sy-embed-frame" style="display:none;" aria-hidden="true"></iframe>
-                <div class="sy-embed-success" id="sy-embed-success" hidden>✅ Merci ! Vérifie ta boîte mail pour confirmer ton inscription.</div>
             </div>
-            <script>
-              (function () {
-                var form = document.getElementById('sy-embed-form');
-                if (!form) return;
-                var successEl = document.getElementById('sy-embed-success');
-                form.addEventListener('submit', function () {
-                  var emailInput = form.querySelector('input[name="email"]');
-                  var email = emailInput ? emailInput.value.trim() : '';
-                  if (!email) { emailInput && emailInput.focus(); return; }
-                  if (successEl) successEl.hidden = false;
-                  form.reset();
-                });
-              })();
-            </script>
         </div>
     </section>
 
