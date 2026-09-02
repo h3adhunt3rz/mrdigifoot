@@ -56,30 +56,11 @@
             <h3 class="newsletter-title">💌 Reçois les résultats & la newsletter</h3>
             <p class="newsletter-sub">Vérifie tes pronostics, suis l'EPL et reçois du contenu foot chaque semaine.</p>
             <div class="newsletter-form" data-newsletter>
-                <form method="post" action="https://systeme.io/embedded/44083581/subscription" class="sy-embed-form" id="sy-embed-form" target="sy-embed-frame">
+                <form method="post" action="https://systeme.io/embedded/44083581/subscription" class="sy-embed-form">
                     <input type="email" name="email" class="sy-embed-input" placeholder="Ton email" required aria-label="Ton email">
                     <button type="submit" class="sy-embed-btn">Je rejoins le terrain</button>
                 </form>
-                <iframe name="sy-embed-frame" id="sy-embed-frame" style="display:none;" aria-hidden="true"></iframe>
-                <div class="sy-embed-success" id="sy-embed-success" hidden>✅ Merci ! Vérifie ta boîte mail pour confirmer ton inscription.</div>
             </div>
-            <script>
-              (function () {
-                var form = document.getElementById('sy-embed-form');
-                if (!form) return;
-                var successEl = document.getElementById('sy-embed-success');
-                var frame = document.getElementById('sy-embed-frame');
-                form.addEventListener('submit', function (e) {
-                  /* On laisse la soumission se faire dans l'iframe cachée (pas de changement de page).
-                     On affiche le message de succès immédiatement après soumission. */
-                  var emailInput = form.querySelector('input[name="email"]');
-                  var email = emailInput ? emailInput.value.trim() : '';
-                  if (!email) { emailInput && emailInput.focus(); e.preventDefault(); return; }
-                  if (successEl) successEl.hidden = false;
-                  form.reset();
-                });
-              })();
-            </script>
         </div>
     </section>
 
