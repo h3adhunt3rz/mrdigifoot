@@ -288,50 +288,10 @@ body {
     width: 100%;
     max-width: 460px;
 }
-.sy-embed-form {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-.sy-embed-input {
-    flex: 1;
-    min-width: 0;
-    padding: 14px 16px;
-    border: 1px solid rgba(192, 157, 60, 0.4);
+.newsletter-form iframe {
+    width: 100% !important;
+    border: none !important;
     border-radius: 12px;
-    background: rgba(0, 0, 0, 0.35);
-    color: #fff;
-    font-family: var(--font-display);
-    font-size: 0.95rem;
-    outline: none;
-    box-sizing: border-box;
-}
-.sy-embed-input::placeholder {
-    color: var(--text-muted);
-    opacity: 0.7;
-}
-.sy-embed-input:focus {
-    border-color: var(--gold-soft);
-    box-shadow: 0 0 0 3px rgba(192, 157, 60, 0.2);
-}
-.sy-embed-btn {
-    flex-shrink: 0;
-    padding: 14px 22px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(135deg, var(--red), #b01424);
-    color: #fff;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 0.95rem;
-    letter-spacing: 0.03em;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-.sy-embed-btn:hover {
-    background: linear-gradient(135deg, #ff2236, #c91527);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(225, 29, 46, 0.4);
 }
 .canvas {
     width: 100%;
@@ -1361,13 +1321,6 @@ body {
     }
     .newsletter-title {
         font-size: 1.05rem;
-    }
-    .sy-embed-form {
-        flex-direction: column;
-        gap: 10px;
-    }
-    .sy-embed-btn {
-        width: 100%;
     }
     .card-grid {
         grid-template-columns: 1fr;
