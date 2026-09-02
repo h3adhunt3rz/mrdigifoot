@@ -278,6 +278,7 @@ function buildCard(f) {
         <hr class="card-sep" />
         <div class="prediction-zone">
           <div class="pred-status" data-status>⏳ En attente</div>
+          <div class="pred-verdict-badge" data-verdict style="display:none;"></div>
           <div class="pred-choices" data-choices>
             ${choiceBtnHTML("1", "1", shortName(f.home_name))}
             ${choiceBtnHTML("N", "N", "Nul")}
@@ -523,6 +524,18 @@ async function init() {
                 } else {
                     statusEl.textContent = '⏳ En attente';
                     statusEl.className = 'pred-status';
+                }
+            }
+
+            // 1bis. Verdict (bon / mauvais pronostic) une fois le match terminé et mon vote connu
+            const verdictEl = card.querySelector("[data-verdict]");
+            if (verdictEl) {
+                if (played && myChoice != null) {
+                    verdictEl.className = 'pred-verdict-badge ' + (gotIt ? 'good' : 'bad');
+                    verdictEl.innerHTML = `<span class="pred-verdict-symbol">${gotIt ? '✓' : '✕'}</span><span class="pred-status-text">${gotIt ? 'Bon pronostic' : 'Mauvais pronostic'}</span>`;
+                    verdictEl.style.display = 'inline-flex';
+                } else {
+                    verdictEl.style.display = 'none';
                 }
             }
 

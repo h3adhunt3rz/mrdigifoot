@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-31T18:58:56",
+  "generated_at": "2026-09-02T12:39:56",
   "season": "2026-2027",
   "count": 380,
   "fixtures": [
@@ -294,13 +294,13 @@
       "matchday": 2,
       "competition": "EPL",
       "date": "2026-08-31",
-      "status": "À venir",
+      "status": "Terminé",
       "home_team_id": "aston-villa",
       "away_team_id": "arsenal",
       "home_name": "Aston Villa",
       "away_name": "Arsenal",
-      "home_score": null,
-      "away_score": null,
+      "home_score": 0,
+      "away_score": 1,
       "round_label": "J2"
     },
     {
