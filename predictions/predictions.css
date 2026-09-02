@@ -288,10 +288,7 @@ body {
     width: 100%;
     max-width: 460px;
 }
-.newsletter-form .sy-form {
-    width: 100%;
-}
-.newsletter-form .sy-form iframe {
+.newsletter-form iframe {
     width: 100% !important;
     border: none !important;
     border-radius: 12px;
