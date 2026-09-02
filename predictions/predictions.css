@@ -333,6 +333,18 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(225, 29, 46, 0.4);
 }
+.sy-embed-success {
+    margin-top: 12px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background: rgba(46, 204, 113, 0.12);
+    border: 1px solid rgba(46, 204, 113, 0.5);
+    color: #7dffb8;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: center;
+}
 .canvas {
     width: 100%;
     max-width: 1200px;
