@@ -710,18 +710,19 @@ h1 {
 
 /* --- Qui je suis (sous l'anti-haine) --- */
 .who-am-i {
-    width: 100%;
     max-width: 640px;
-    margin: 24px auto 0;
+    margin: 30px auto 0;
     padding: 0 20px;
     box-sizing: border-box;
     text-align: center;
+}
+.who-am-i p {
     font-family: 'Space Grotesk', sans-serif;
     font-size: 0.98rem;
     color: var(--text-muted);
     line-height: 1.7;
+    margin: 0;
 }
-.who-am-i p { margin: 0; }
 
 /* --- Note collaboration (footer) --- */
 .collab-note p {
