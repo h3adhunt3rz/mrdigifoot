@@ -149,24 +149,38 @@ const VOTE_ENDPOINT = `${SUPABASE_URL}/functions/v1/smart-handler`;
 
 /* Obtient un token Turnstile (captcha invisible).
    Le widget (mode interaction-only) stocke son token automatiquement
-   dans window._turnstileToken. On l'attend s'il n'est pas encore prêt. */
+   dans window._turnstileToken. On l'attend s'il n'est pas encore prêt.
+
+   IMPORTANT : un token Turnstile est à USAGE UNIQUE. Dès qu'on le récupère
+   on le consomme (cache vidé) puis on redémarre le widget pour préparer un
+   token neuf pour le vote suivant — sinon le 2e vote renverrait le même
+   token déjà validé par le serveur et Cloudflare le refuserait (anti-robot). */
 function getTurnstileToken() {
     return new Promise((resolve, reject) => {
         const tryOnce = () => {
             if (typeof window.turnstile === "undefined" || !window.TURNSTILE_SITE_KEY) {
                 reject(new Error("captcha non configuré"));
-                return;
+                return true;
             }
             if (window.turnstileWidgetId == null) {
                 // widget pas encore initialisé → on retente brièvement
                 return false;
             }
             if (window._turnstileToken) {
-                resolve(window._turnstileToken);
+                // Consomme le token et régénère immédiatement le suivant
+                const token = window._turnstileToken;
+                window._turnstileToken = null;
+                window._turnstileResetting = true;
+                try { window.turnstile.reset(window.turnstileWidgetId); } catch (e) { /* ignore */ }
+                resolve(token);
                 return true;
             }
-            // Token pas encore généré : on peut relancer le widget si besoin
-            try { window.turnstile.reset(window.turnstileWidgetId); } catch (e) { /* ignore */ }
+            // Pas de token disponible : on demande au widget d'en générer un
+            // (une seule demande à la fois, le callback remettra le flag à false)
+            if (!window._turnstileResetting) {
+                window._turnstileResetting = true;
+                try { window.turnstile.reset(window.turnstileWidgetId); } catch (e) { window._turnstileResetting = false; }
+            }
             return false;
         };
 
@@ -176,49 +190,58 @@ function getTurnstileToken() {
         const iv = setInterval(() => {
             tries++;
             if (tryOnce()) { clearInterval(iv); }
-            else if (tries >= 20) { clearInterval(iv); reject(new Error("captcha non prêt")); }
+            else if (tries >= 40) { clearInterval(iv); reject(new Error("captcha non prêt")); }
         }, 250);
     });
 }
+
+/* Chaîne de vote sérialisée : un seul envoi à la fois, sinon deux votes
+   concurrents pourraient récupérer le même token Turnstile (usage unique). */
+let _voteQueue = Promise.resolve();
 
 /* --- Supabase : enregistrement d'un vote sécurisé (1/N/2) ---
    Passe par la Edge Function 'smart-handler' qui :
      1. vérifie le captcha Turnstile (anti-bot),
      2. limite à 1 vote par IP par match. */
 async function saveVote(f, choice) {
-    const vid = getVisitorId();
-    const token = await getTurnstileToken();
-    const body = {
-        fixture_id: f.id,
-        home_team_id: f.home_team_id,
-        away_team_id: f.away_team_id,
-        home_name: f.home_name,
-        away_name: f.away_name,
-        matchday: f.matchday,
-        season: f.season,
-        fixture_date: f.date,
-        choice: choice,
-        visitor_id: vid,
-        turnstile_token: token
+    const run = async () => {
+        const vid = getVisitorId();
+        const token = await getTurnstileToken();
+        const body = {
+            fixture_id: f.id,
+            home_team_id: f.home_team_id,
+            away_team_id: f.away_team_id,
+            home_name: f.home_name,
+            away_name: f.away_name,
+            matchday: f.matchday,
+            season: f.season,
+            fixture_date: f.date,
+            choice: choice,
+            visitor_id: vid,
+            turnstile_token: token
+        };
+        const res = await fetch(VOTE_ENDPOINT, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": SUPABASE_ANON_KEY,
+                "Authorization": "Bearer " + SUPABASE_ANON_KEY
+            },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) {
+            let err = new Error("save vote failed: " + res.status);
+            try {
+                const data = await res.json();
+                err = new Error(data.error || data.message || ("save vote failed: " + res.status));
+                err.code = data.error;
+            } catch (e) { /* ignore */ }
+            throw err;
+        }
     };
-    const res = await fetch(VOTE_ENDPOINT, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "apikey": SUPABASE_ANON_KEY,
-            "Authorization": "Bearer " + SUPABASE_ANON_KEY
-        },
-        body: JSON.stringify(body)
-    });
-    if (!res.ok) {
-        let err = new Error("save vote failed: " + res.status);
-        try {
-            const data = await res.json();
-            err = new Error(data.error || data.message || ("save vote failed: " + res.status));
-            err.code = data.error;
-        } catch (e) { /* ignore */ }
-        throw err;
-    }
+    const p = _voteQueue.then(run, run);
+    _voteQueue = p.catch(() => { /* la chaîne continue même après une erreur */ });
+    return p;
 }
 
 /* --- Mode test : supprime les votes du visiteur courant (bouton caché ?test=1) --- */
