@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /supabase-config.js
+
+Sitemap: https://mrdigifoot.com/sitemap.xml
