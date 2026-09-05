@@ -691,3 +691,17 @@ h1 {
     .hero-titles { align-items: center; text-align: center; }
     .canvas { grid-template-columns: 1fr; padding-top: 20px; }
 }
+
+/* --- SEO : bloc réseaux & contenus --- */
+.seo-network {
+    width: 100%;
+    max-width: 500px;
+    margin: 28px auto 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.7;
+}
+.seo-network strong {
+    color: var(--primary-light);
+}
