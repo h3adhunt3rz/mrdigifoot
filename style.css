@@ -731,7 +731,7 @@ h1 {
     line-height: 1.6;
     color: var(--text-muted);
     max-width: 620px;
-    margin: 0 auto;
+    margin: 0 auto 40px;
 }
 
 /* --- Bouton contact réduit --- */
