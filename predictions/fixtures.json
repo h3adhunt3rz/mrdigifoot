@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T17:01:46",
+  "generated_at": "2026-09-05T15:20:56",
   "season": "2026-2027",
   "count": 380,
   "fixtures": [
@@ -649,21 +649,6 @@
       "round_label": "J5"
     },
     {
-      "id": "fotmob-epl-2026-2027-5795460",
-      "season": "2026-2027",
-      "matchday": 5,
-      "competition": "EPL",
-      "date": "2026-09-19",
-      "status": "À venir",
-      "home_team_id": "leeds-united",
-      "away_team_id": "crystal-palace",
-      "home_name": "Leeds United",
-      "away_name": "Crystal Palace",
-      "home_score": null,
-      "away_score": null,
-      "round_label": "J5"
-    },
-    {
       "id": "fotmob-epl-2026-2027-5795462",
       "season": "2026-2027",
       "matchday": 5,
@@ -734,6 +719,21 @@
       "away_team_id": "manchester-united",
       "home_name": "Fulham",
       "away_name": "Manchester United",
+      "home_score": null,
+      "away_score": null,
+      "round_label": "J5"
+    },
+    {
+      "id": "fotmob-epl-2026-2027-5795460",
+      "season": "2026-2027",
+      "matchday": 5,
+      "competition": "EPL",
+      "date": "2026-09-20",
+      "status": "À venir",
+      "home_team_id": "leeds-united",
+      "away_team_id": "crystal-palace",
+      "home_name": "Leeds United",
+      "away_name": "Crystal Palace",
       "home_score": null,
       "away_score": null,
       "round_label": "J5"
@@ -1129,21 +1129,6 @@
       "round_label": "J8"
     },
     {
-      "id": "fotmob-epl-2026-2027-5795492",
-      "season": "2026-2027",
-      "matchday": 8,
-      "competition": "EPL",
-      "date": "2026-10-24",
-      "status": "À venir",
-      "home_team_id": "liverpool",
-      "away_team_id": "brighton",
-      "home_name": "Liverpool",
-      "away_name": "Brighton",
-      "home_score": null,
-      "away_score": null,
-      "round_label": "J8"
-    },
-    {
       "id": "fotmob-epl-2026-2027-5795489",
       "season": "2026-2027",
       "matchday": 8,
@@ -1169,6 +1154,21 @@
       "away_team_id": "brentford",
       "home_name": "Hull City",
       "away_name": "Brentford",
+      "home_score": null,
+      "away_score": null,
+      "round_label": "J8"
+    },
+    {
+      "id": "fotmob-epl-2026-2027-5795492",
+      "season": "2026-2027",
+      "matchday": 8,
+      "competition": "EPL",
+      "date": "2026-10-25",
+      "status": "À venir",
+      "home_team_id": "liverpool",
+      "away_team_id": "brighton",
+      "home_name": "Liverpool",
+      "away_name": "Brighton",
       "home_score": null,
       "away_score": null,
       "round_label": "J8"
@@ -1214,6 +1214,21 @@
       "away_team_id": "leeds-united",
       "home_name": "Bournemouth",
       "away_name": "Leeds United",
+      "home_score": null,
+      "away_score": null,
+      "round_label": "J9"
+    },
+    {
+      "id": "fotmob-epl-2026-2027-5795496",
+      "season": "2026-2027",
+      "matchday": 9,
+      "competition": "EPL",
+      "date": "2026-10-31",
+      "status": "À venir",
+      "home_team_id": "aston-villa",
+      "away_team_id": "fulham",
+      "home_name": "Aston Villa",
+      "away_name": "Fulham",
       "home_score": null,
       "away_score": null,
       "round_label": "J9"
@@ -1304,21 +1319,6 @@
       "away_team_id": "crystal-palace",
       "home_name": "Tottenham",
       "away_name": "Crystal Palace",
-      "home_score": null,
-      "away_score": null,
-      "round_label": "J9"
-    },
-    {
-      "id": "fotmob-epl-2026-2027-5795496",
-      "season": "2026-2027",
-      "matchday": 9,
-      "competition": "EPL",
-      "date": "2026-11-01",
-      "status": "À venir",
-      "home_team_id": "aston-villa",
-      "away_team_id": "fulham",
-      "home_name": "Aston Villa",
-      "away_name": "Fulham",
       "home_score": null,
       "away_score": null,
       "round_label": "J9"
