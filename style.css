@@ -705,3 +705,17 @@ h1 {
 .seo-network strong {
     color: var(--primary-light);
 }
+
+/* --- Anti-haine --- */
+.anti-hate {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto 0;
+    text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
