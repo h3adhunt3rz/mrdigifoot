@@ -92,13 +92,6 @@
     </section>
 
     <footer class="foot-hub">
-        <div class="hero-bio collab-note">
-            <p>Mon univers lie la passion du foot à une exigence technique et visuelle. Si vous souhaitez associer votre marque à mes contenus ou collaborer sur un projet spécifique, je suis ouvert aux propositions sérieuses qui respectent l'esprit de ma communauté.</p>
-        </div>
-        <button class="big-button" id="copy-btn" onclick="copyMail()">
-            <span id="btn-text">PRENDRE CONTACT</span>
-            <svg id="btn-icon" style="width:20px;height:20px" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,10V7L16,11L12,15V12H8V10H12Z" /></svg>
-        </button>
         <div class="legal">
             &copy; 2026 Mr DigiFoot | Tous droits réservés<br><br>
             <a href="../privacy.html" style="color: inherit; text-decoration: underline;">Politique de confidentialité</a> ·
@@ -148,25 +141,5 @@
       }
     </script>
     <script src="predictions.js"></script>
-    <script>
-      let isCopying = false;
-      function copyMail() {
-          if (isCopying) return;
-          isCopying = true;
-          const u = "prod";
-          const d = "mrdigifoot.com";
-          const email = u + "@" + d;
-          navigator.clipboard.writeText(email);
-          const btnText = document.getElementById('btn-text');
-          const original = btnText.textContent;
-          btnText.textContent = "MAIL COPIÉ !";
-          document.getElementById('copy-btn').style.background = "#fff";
-          setTimeout(() => {
-              btnText.textContent = original;
-              document.getElementById('copy-btn').style.background = "";
-              isCopying = false;
-          }, 1600);
-      }
-    </script>
 </body>
 </html>
